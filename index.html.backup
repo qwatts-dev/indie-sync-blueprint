@@ -1,0 +1,1555 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Indie Sync Blueprint | Market Research Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              navy: {
+                DEFAULT: "#102136",
+                light: "#1a2c42",
+              },
+              purple: {
+                DEFAULT: "#7456F1",
+                hover: "#5e45c4",
+              },
+              "blue-grey": "#4D5D6D",
+              "off-white": "#F9FAFB",
+            },
+            fontFamily: {
+              sans: ["Figtree", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "4px",
+            },
+          },
+        },
+      };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* 338studios Palette: Navy, Vibrant Purple, Tech Feel */
+      :root {
+        /* Default Dark Mode Variables */
+        --bg-color: #102136; /* Navy */
+        --bg-card: #1a2c42; /* Lighter Navy/Highlight */
+        --bg-footer: #0b1624; /* Darker Navy */
+        
+        --primary-text: #ffffff; /* White */
+        --secondary-text: #9ca3af; /* Light Grey (Tailwind gray-400) */
+        --muted-text: #6b7280; /* Gray-500 */
+        
+        --accent-color: #7456F1; /* Vibrant Purple */
+        --accent-hover: #5e45c4;
+        
+        --border-color: #2d3b4e;
+        --highlight-bg: #1a2c42;
+
+        /* Glassmorphism Variables */
+        --glass-bg: rgba(16, 33, 54, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+      }
+
+      /* Light Mode Overrides */
+      .light-mode {
+        --bg-color: #F9FAFB; /* Gray-50 */
+        --bg-card: #FFFFFF; /* White */
+        --bg-footer: #F3F4F6; /* Gray-100 */
+        
+        --primary-text: #111827; /* Gray-900 (Almost Black) */
+        --secondary-text: #4B5563; /* Gray-600 */
+        --muted-text: #9CA3AF; /* Gray-400 */
+        
+        --border-color: #E5E7EB; /* Gray-200 */
+        --highlight-bg: #FFFFFF;
+
+        /* Glassmorphism Light Mode */
+        --glass-bg: rgba(255, 255, 255, 0.75);
+        --glass-border: rgba(255, 255, 255, 0.5);
+        --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+      }
+
+      body {
+        background-color: var(--bg-color);
+        color: var(--primary-text);
+        font-family: "Figtree", sans-serif;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      /* Chart Container Strategy */
+      .chart-container {
+        position: relative;
+        width: 100%;
+        max-width: 600px;
+        height: 300px;
+        margin: 0 auto;
+      }
+
+      @media (min-width: 768px) {
+        .chart-container {
+          height: 350px;
+        }
+      }
+
+      /* Custom Scrollbar for lists - Dark Theme */
+      .custom-scroll::-webkit-scrollbar {
+        width: 6px;
+      }
+      .custom-scroll::-webkit-scrollbar-track {
+        background: var(--highlight-bg);
+      }
+      .custom-scroll::-webkit-scrollbar-thumb {
+        background: #4b5563;
+        border-radius: 3px;
+      }
+      .custom-scroll::-webkit-scrollbar-thumb:hover {
+        background: #6b7280;
+      }
+
+      /* Hide Scrollbar for Horizontal Nav */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+      }
+
+      .tab-active {
+        border-bottom: 2px solid var(--accent-color);
+        color: var(--primary-text);
+        font-weight: 600;
+      }
+
+      .tab-inactive {
+        color: var(--secondary-text);
+        border-bottom: 2px solid transparent;
+      }
+      .tab-inactive:hover {
+        color: var(--accent-color);
+      }
+
+      .song-item {
+        transition: background-color 0.2s ease;
+      }
+      .song-item:hover {
+        background-color: var(--highlight-bg);
+      }
+
+      /* Platform Buttons - 36x36 Circle, White with Gray Border */
+      .btn-platform {
+        width: 36px;
+        height: 36px;
+        min-width: 36px; /* prevent shrinking */
+        border-radius: 50%;
+        background-color: white;
+        border: 1px solid #e5e7eb; /* gray-200 */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+      }
+      .btn-platform:hover {
+        border-color: #d1d5db; /* gray-300 */
+        background-color: #f9fafb; /* gray-50 */
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      
+      .no-tap-highlight {
+        -webkit-tap-highlight-color: transparent;
+        outline: none !important;
+        box-shadow: none !important;
+      }
+      .no-tap-highlight:focus,
+      .no-tap-highlight:focus-visible,
+      .no-tap-highlight:active {
+        outline: none !important;
+        box-shadow: none !important;
+      }
+
+      /* Ensure inner SVG is max 20x20 and centered */
+      .btn-platform svg {
+        width: 20px;
+        height: 20px;
+        object-fit: contain;
+      }
+      /* Toggle Switch */
+      /* Toggle Switch */
+      /* Hide the default checkbox */
+      .toggle-checkbox {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      
+      .toggle-label {
+        width: 44px;
+        height: 24px;
+        position: relative;
+        display: block;
+        background: var(--bg-card);
+        border-radius: 9999px;
+        cursor: pointer;
+        transition: background-color 0.2s ease-in;
+        border: 1px solid var(--border-color);
+      }
+      
+      .toggle-label:before {
+        content: '';
+        position: absolute;
+        top: 1px;
+        left: 1px;
+        width: 20px;
+        height: 20px;
+        background: #fff;
+        border-radius: 50%;
+        transition: transform 0.2s ease-in;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      }
+
+      .toggle-checkbox:checked + .toggle-label {
+        background-color: #7456F1;
+        border-color: #7456F1;
+      }
+      
+      .toggle-checkbox:checked + .toggle-label:before {
+        transform: translateX(20px); /* 44px (width) - 2px (borders) - 2px (padding) - 20px (circle) = 20px travel */
+      }
+      
+      /* Theme-based Logo Visibility */
+      /* Default (Dark Mode) - Show Light Logo (White text usually) */
+      .logo-light { display: block; }
+      .logo-dark { display: none; }
+
+      /* Light Mode - Show Dark Logo */
+      .light-mode .logo-light { display: none; }
+      .light-mode .logo-dark { display: block; }
+
+
+
+      /* Liquid Glass Navbar */
+      .nav-pill {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 1.5rem;
+        width: 90%;
+        max-width: 1000px;
+        
+        background: rgba(255, 255, 255, 0.1); /* Fallback / lighter base */
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--glass-border);
+        border-radius: 9999px;
+        box-shadow: var(--glass-shadow);
+        transition: background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden; /* Contain the liquid effect */
+      }
+
+      /* Mobile Navigation Bar */
+      .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(16, 33, 54, 0.85);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid var(--glass-border);
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+        z-index: 100;
+      }
+      
+      .light-mode .bottom-nav {
+        background: rgba(255, 255, 255, 0.85);
+      }
+
+      .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        color: var(--secondary-text);
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        min-width: 64px;
+        padding: 4px 12px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }
+      
+      .nav-item.active {
+        color: var(--accent-color);
+      }
+      
+      .nav-item svg {
+        width: 24px;
+        height: 24px;
+      }
+
+      /* Bottom Sheet (Brand Selector) */
+      .bottom-sheet-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 200;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+      
+      .bottom-sheet-overlay.open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .bottom-sheet {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: var(--bg-card);
+        border-radius: 24px 24px 0 0;
+        padding: 24px;
+        transform: translateY(100%);
+        transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        z-index: 201;
+        max-height: 80vh;
+        overflow-y: auto;
+        border-top: 1px solid var(--border-color);
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+        padding-bottom: calc(20px + env(safe-area-inset-bottom));
+      }
+
+      .bottom-sheet.open {
+        transform: translateY(0);
+      }
+
+      /* Horizontal Snap Carousel */
+      .snap-scroll-x {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 16px;
+        padding-bottom: 16px;
+        width: 100%;
+      }
+      
+      .snap-card {
+        flex: 0 0 85%;
+        scroll-snap-align: center;
+        background: var(--bg-card); /* Fallback */
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+      }
+
+      /* Collapsible Text */
+      .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      
+      .expanded {
+        -webkit-line-clamp: unset;
+      }
+
+      /* Adjust chart container for mobile */
+      @media (max-width: 768px) {
+        main {
+          padding-top: 80px !important;
+          padding-bottom: 0; /* Footer handles the spacing */
+        }
+        
+        .desktop-only {
+          display: none !important;
+        }
+
+        .chart-container-mobile {
+          height: 250px;
+        }
+      }
+
+      @media (min-width: 769px) {
+        .mobile-only {
+          display: none !important;
+        }
+      }
+
+      /* Liquid Background Layer */
+      .liquid-bg {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle at center, rgba(116, 86, 241, 0.15), transparent 60%);
+        opacity: 0.6;
+        z-index: -1;
+        filter: url(#liquid-flow);
+        animation: liquidMove 20s infinite linear;
+        pointer-events: none;
+      }
+      
+      @keyframes liquidMove {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      /* Adjust main content ensuring it isn't hidden behind fixed nav */
+      main {
+        padding-top: 120px !important;
+      }
+    </style>
+    <!-- Application Structure Plan:
+         1. Header: Context "Intentional Research".
+         2. Navigation: Categories (Ads, TV, Games, etc.).
+         3. Main Dashboard:
+            - Brand Selector.
+            - Brand Details & Playlist (Updated Layout: Buttons below content).
+            - Sonic Analysis Charts.
+         4. Footer: Educational steps.
+    -->
+    <!-- Visualization & Content Choices:
+         - Layout Update: Songs now display title/artist, then vibe badge, then a row of circular CTA buttons.
+         - Apple Logo: Using the specific SVG provided by user.
+         - Links: HTTPS Universal Links for best app/web fallback behavior.
+         - NO SVG FILES: SVGs are inline.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+  </head>
+  <body class="antialiased min-h-screen flex flex-col">
+    <!-- Header Section (Floating Glass Pill) -->
+    <header class="w-full pointer-events-none sticky top-0 z-50">
+      <!-- The Pill Container -->
+      <div class="nav-pill pointer-events-auto">
+        <!-- Liquid Background Element -->
+        <div class="liquid-bg"></div>
+        
+        <!-- Logo Area -->
+        <div class="flex flex-col items-start justify-center">
+            <div class="h-6 overflow-hidden flex items-center">
+              <img src="images/338-sync-long-light.svg" alt="Indie Sync" class="logo-light h-full w-auto object-contain">
+              <img src="images/338-sync-long-dark.svg" alt="Indie Sync" class="logo-dark h-full w-auto object-contain">
+            </div>
+            <p class="text-[9px] text-[var(--secondary-text)] tracking-[0.1em] uppercase leading-tight mt-0.5 ml-0.5 font-medium">
+              Market Research
+            </p>
+        </div>
+
+        <!-- Navigation Links (Desktop Only) -->
+        <nav class="hidden md:flex items-center space-x-6 desktop-only">
+          <a
+            href="#dashboard"
+            class="text-xs font-bold uppercase tracking-wider text-[var(--primary-text)] hover:text-purple transition-colors"
+            >Dashboard</a
+          >
+          <a
+            href="#analysis"
+            class="text-xs font-bold uppercase tracking-wider text-[var(--secondary-text)] hover:text-purple transition-colors"
+            >Analysis</a
+          >
+          <a
+            href="#checklist"
+            class="text-xs font-bold uppercase tracking-wider text-[var(--secondary-text)] hover:text-purple transition-colors"
+            >Checklist</a
+          >
+        </nav>
+
+        <!-- Use Flex Grow/Spacer if needed, but space-between handles it -->
+
+        <!-- Right Side: Toggle -->
+        <div class="flex items-center">
+            <div class="relative inline-block align-middle select-none">
+              <input type="checkbox" name="toggle" id="theme-toggle" class="toggle-checkbox" onclick="toggleTheme()"/>
+              <label for="theme-toggle" class="toggle-label"></label>
+            </div>
+            <!-- Optional Label
+            <label for="theme-toggle" class="text-[10px] font-bold uppercase tracking-wider text-[var(--secondary-text)] cursor-pointer">
+              <span class="hidden light-mode-text">Dark</span>
+              <span class="dark-mode-text">Light</span>
+            </label> 
+            -->
+        </div>
+
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+      <!-- Intro Context -->
+      <section class="mb-14 max-w-4xl mx-auto text-center">
+        <h2 class="text-4xl font-extrabold mb-4 text-[var(--primary-text)] uppercase tracking-tight">
+          Define Your <span class="text-purple">Sonic Vision</span>
+        </h2>
+        <p class="text-[var(--secondary-text)] leading-relaxed text-lg max-w-2xl mx-auto">
+          As per your course notes, creativity starts with imitation and
+          intentional research. Use this dashboard to
+          <strong class="text-[var(--primary-text)]">study the market</strong>. Select a category below to explore
+          top brands, analyze their "Sonic Identity," and listen to the
+          reference tracks directly.
+        </p>
+      </section>
+
+      <!-- Category Tabs (Pill Filters) -->
+      <div
+        class="flex flex-nowrap border-b border-transparent mb-8 overflow-x-auto justify-start md:justify-center gap-3 px-4 -mx-4 md:px-0 md:mx-0 no-scrollbar pb-2 md:pb-0"
+      >
+        <button
+          onclick="setCategory('Ads')"
+          id="tab-Ads"
+          class="no-tap-highlight px-6 py-2 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-full border border-purple bg-[var(--bg-card)]"
+        >
+          Commercials
+        </button>
+        <button
+          onclick="setCategory('TV')"
+          id="tab-TV"
+          class="no-tap-highlight px-6 py-2 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-full border border-[var(--border-color)] bg-transparent"
+        >
+          TV & Movies
+        </button>
+        <button
+          onclick="setCategory('Games')"
+          id="tab-Games"
+          class="no-tap-highlight px-6 py-2 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-full border border-[var(--border-color)] bg-transparent"
+        >
+          Video Games
+        </button>
+        <button
+          onclick="setCategory('Trailers')"
+          id="tab-Trailers"
+          class="no-tap-highlight px-6 py-2 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-full border border-[var(--border-color)] bg-transparent"
+        >
+          Trailers
+        </button>
+        <button
+          onclick="setCategory('Influencer')"
+          id="tab-Influencer"
+          class="no-tap-highlight px-6 py-2 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-full border border-[var(--border-color)] bg-transparent"
+        >
+          Influencers
+        </button>
+      </div>
+
+      <!-- Dashboard Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8" id="dashboard">
+        <!-- Left Column: Brand Selector (Sticky) -->
+        <div class="hidden lg:flex lg:col-span-3 flex-col gap-6 lg:sticky lg:top-24 h-fit">
+          <div
+            class="bg-[var(--glass-bg)] backdrop-blur-xl p-6 rounded-2xl border border-[var(--border-color)]"
+          >
+            <h3
+              class="text-xs font-bold uppercase tracking-widest text-[var(--secondary-text)] mb-6"
+            >
+              Select a Brand
+            </h3>
+            <div id="brand-list" class="flex flex-col gap-3">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- Quick Stats Box -->
+          <div class="bg-gradient-to-br from-purple to-[#5e45c4] p-6 rounded-2xl text-white">
+            <h3 class="text-sm font-bold uppercase tracking-wide mb-3 opacity-90">
+              Category Insight
+            </h3>
+            <p id="category-insight" class="text-sm font-medium leading-relaxed">
+              Select a category to see insights.
+            </p>
+          </div>
+        </div>
+
+        <!-- Middle Column: Playlist & Sonic Identity -->
+        <div class="lg:col-span-5 flex flex-col gap-6">
+          <!-- Header for Selected Brand -->
+          <div
+            class="bg-[var(--glass-bg)] backdrop-blur-xl p-8 rounded-2xl border border-[var(--border-color)] relative overflow-hidden"
+          >
+            <!-- Decorative gradient orb -->
+            <div class="absolute -top-10 -right-10 w-40 h-40 bg-purple blur-[60px] opacity-20 pointer-events-none"></div>
+
+            <div class="flex justify-between items-start mb-6 relative z-10">
+              <div class="w-full">
+                <!-- Mobile Brand Selector Trigger -->
+                <button onclick="toggleBottomSheet(true)" class="lg:hidden flex items-center gap-2 w-full text-left mb-2 group">
+                   <h2 id="brand-name-mobile" class="text-3xl font-extrabold text-[var(--primary-text)] tracking-tight">Apple</h2>
+                   <svg class="w-6 h-6 text-purple group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+
+                <!-- Desktop Title -->
+                <h2
+                  id="brand-name"
+                  class="hidden lg:block text-4xl font-extrabold text-[var(--primary-text)] mt-4 tracking-tight"
+                >
+                  Apple
+                </h2>
+                
+                <span
+                  id="brand-tag"
+                  class="text-[10px] font-bold uppercase tracking-widest text-purple bg-[rgba(116,86,241,0.1)] px-3 py-1 rounded-lg inline-block mt-2 lg:mt-0"
+                  >TECH / LIFESTYLE</span
+                >
+              </div>
+            </div>
+            
+            <div class="relative group">
+                <p id="brand-desc" class="text-sm text-[var(--secondary-text)] mb-2 leading-relaxed font-medium line-clamp-2 lg:line-clamp-none transition-all">
+                  Known for setting trends. Styles range from minimalist, catchy
+                  indie-pop to high-energy electronic. Lyrics often focus on "New,"
+                  "Go," "You," and "Color."
+                </p>
+                <button id="read-more-btn" onclick="toggleDescription()" class="lg:hidden text-xs font-bold text-purple uppercase tracking-wider mb-4">
+                  Read more
+                </button>
+            </div>
+
+            <!-- Reference Playlist -->
+            <div class="border-b border-[var(--border-color)] pb-3 mt-8 mb-4">
+              <h3 class="text-xs font-bold uppercase tracking-widest text-[var(--secondary-text)]">
+                Reference Playlist
+              </h3>
+            </div>
+
+            <!-- Scrollable Song List (Horizontal on Mobile, Vertical on Desktop) -->
+            <div
+              id="song-list"
+              class="flex flex-row lg:flex-col gap-4 lg:gap-3 overflow-x-auto lg:overflow-y-auto snap-x lg:snap-none pb-4 lg:pb-0 custom-scroll pr-2 snap-mandatory"
+              style="max-height: none;"
+            >
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Analytics -->
+        <div id="analysis" class="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-24 h-fit">
+          <!-- Sonic Fingerprint Chart -->
+          <div
+            class="bg-[var(--glass-bg)] backdrop-blur-xl p-6 rounded-2xl border border-[var(--border-color)] flex flex-col"
+          >
+            <h3 class="text-sm font-bold uppercase tracking-wide text-[var(--primary-text)] mb-1">
+              Sonic Fingerprint
+            </h3>
+            <p class="text-xs text-[var(--secondary-text)] mb-6">
+              Does your music match these levels?
+            </p>
+            <div class="flex-grow flex items-center justify-center">
+              <div class="chart-container chart-container-mobile">
+                <canvas id="radarChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Genre Distribution -->
+          <div
+            class="bg-[var(--glass-bg)] backdrop-blur-xl p-6 rounded-2xl border border-[var(--border-color)]"
+          >
+            <h3 class="text-sm font-bold uppercase tracking-wide text-[var(--primary-text)] mb-6">
+              Key Genres for Brand
+            </h3>
+            <div class="chart-container" style="height: 200px">
+              <canvas id="barChart"></canvas>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <!-- Educational Checklist Section -->
+      <section id="checklist" class="mt-20 border-t border-[var(--border-color)] pt-12">
+        <h2 class="text-3xl font-extrabold mb-8 text-[var(--primary-text)] uppercase tracking-tight text-center">
+          Your Action Plan
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Step 1 -->
+          <div
+            class="bg-[var(--glass-bg)] backdrop-blur-xl p-8 rounded-2xl border border-[var(--border-color)] relative overflow-hidden group hover:border-purple transition-colors duration-300"
+          >
+            <div class="absolute top-0 left-0 w-1 h-full bg-purple"></div>
+            <h3 class="text-lg font-bold mb-4 pl-0 text-[var(--primary-text)] group-hover:text-purple transition-colors">
+              Step 1: Intentional Research
+            </h3>
+            <ul class="text-sm text-[var(--secondary-text)] space-y-3 list-disc list-inside leading-relaxed">
+              <li>Study the market (use the dashboard above).</li>
+              <li>Listen to successful artists with placements.</li>
+              <li><strong class="text-[var(--primary-text)]">Imitate</strong> early on to learn the rules.</li>
+              <li>Avoid guessing; analyze specific brands.</li>
+            </ul>
+          </div>
+
+          <!-- Step 2 -->
+          <div
+            class="bg-[var(--glass-bg)] backdrop-blur-xl p-8 rounded-2xl border border-[var(--border-color)] relative overflow-hidden group hover:border-purple transition-colors duration-300"
+          >
+            <div class="absolute top-0 left-0 w-1 h-full bg-[#8A8780]"></div>
+            <h3 class="text-lg font-bold mb-4 pl-0 text-[var(--primary-text)] group-hover:text-purple transition-colors">
+              Step 2: Create Reference Playlist
+            </h3>
+            <ul class="text-sm text-[var(--secondary-text)] space-y-3 list-disc list-inside leading-relaxed">
+              <li>Use TuneFind (TV/Games).</li>
+              <li>Use iSpot.tv (Ads).</li>
+              <li>Search YouTube for "Ad Playlists".</li>
+              <li>Check Licensing Company sites.</li>
+              <li><strong class="text-[var(--primary-text)]">Goal:</strong> Find where your sound fits.</li>
+            </ul>
+          </div>
+
+          <!-- Step 3 -->
+          <div
+            class="bg-[var(--glass-bg)] backdrop-blur-xl p-8 rounded-2xl border border-[var(--border-color)] relative overflow-hidden group hover:border-purple transition-colors duration-300"
+          >
+            <div class="absolute top-0 left-0 w-1 h-full bg-[#ffffff]"></div>
+            <h3 class="text-lg font-bold mb-4 pl-0 text-[var(--primary-text)] group-hover:text-purple transition-colors">
+              Step 3: Determine Your Fit
+            </h3>
+            <ul class="text-sm text-[var(--secondary-text)] space-y-3 list-disc list-inside leading-relaxed">
+              <li>Can you pivot to a new sound?</li>
+              <li>Are you fitting Trailers or Influencers?</li>
+              <li>Don't be afraid to explore new sounds.</li>
+              <li>Align your brand *after* understanding the market.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[var(--bg-footer)] border-t border-[var(--border-color)] mt-20 py-12 pb-24 md:pb-12">
+      <div class="max-w-7xl mx-auto px-4 text-center text-[var(--secondary-text)] border-gray-600 text-sm">
+        <p>
+          &copy; 2026 Indie Artist Sync Guide. Built for <span class="text-purple">intentional research</span>.
+        </p>
+      </div>
+    </footer>
+
+    <!-- Bottom Navigation Bar (Mobile) -->
+    <nav class="bottom-nav mobile-only">
+      <button class="nav-item active" onclick="scrollToSection('dashboard')">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+        </svg>
+        <span>DB</span>
+      </button>
+      <button class="nav-item" onclick="scrollToSection('analysis')">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" />
+        </svg>
+        <span>Analysis</span>
+      </button>
+      <button class="nav-item" onclick="scrollToSection('checklist')">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>Plan</span>
+      </button>
+    </nav>
+
+    <!-- Bottom Sheet Brand Selector -->
+    <div id="brand-sheet-overlay" class="bottom-sheet-overlay" onclick="toggleBottomSheet(false)"></div>
+    <div id="brand-sheet" class="bottom-sheet">
+      <div class="w-12 h-1 bg-[var(--border-color)] rounded-full mx-auto mb-6"></div>
+      <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-bold uppercase text-[var(--primary-text)]">Select a Brand</h3>
+          <button onclick="toggleBottomSheet(false)" class="p-2 text-[var(--secondary-text)]">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+      </div>
+      <!-- Search Input -->
+      <div class="relative mb-4">
+        <input type="text" id="brand-search" placeholder="Search brands..." class="w-full bg-[var(--bg-color)] text-[var(--primary-text)] border border-[var(--border-color)] rounded-xl py-3 px-10 text-sm focus:outline-none focus:border-purple transition-colors">
+        <svg class="w-5 h-5 text-[var(--secondary-text)] absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      </div>
+      
+      <div id="mobile-brand-list" class="flex flex-col gap-3 max-h-[60vh] overflow-y-auto">
+        <!-- JS Populated -->
+      </div>
+    </div>
+
+    <!-- SVG Filters for Liquid Effect -->
+    <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="liquid-flow" x="-20%" y="-20%" width="140%" height="140%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.005" numOctaves="3" result="turbulence">
+            <animate attributeName="baseFrequency" dur="30s" values="0.005;0.01;0.005" repeatCount="indefinite" />
+          </feTurbulence>
+          <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="35" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </defs>
+    </svg>
+
+    <script>
+      // State Tracking (Moved to State Management section below)
+
+      function toggleTheme() {
+        document.body.classList.toggle("light-mode");
+        const isLight = document.body.classList.contains("light-mode");
+        
+        // Update Toggle Text if needed (optional)
+        // Re-render charts to apply new theme colors
+        const brandData = syncData[currentCategory].brands[currentBrandIndex];
+        updateCharts(brandData);
+      }
+
+      // --- DATA STORE ---
+      const syncData = {
+        Ads: {
+          insight:
+            "Ads require immediate hooks. Intro must be catchy (1-3 seconds). Lyrics should be universal (Freedom, Fun, Color, New). High sync fees, shorter shelf life.",
+          brands: [
+            {
+              name: "Apple",
+              tag: "Tech / Lifestyle",
+              desc: "The 'Holy Grail' of sync. Looking for distinct, quirky, bass-heavy, or catchy Indie Pop. Often creates careers.",
+              fingerprint: [90, 40, 95, 80, 70], // Energy, Emotion, Uniqueness, Catchiness, Lyrics
+              genres: ["Indie Pop", "Electronic", "Alt-Hip Hop"],
+              songs: [
+                {
+                  title: "Down",
+                  artist: "Marian Hill",
+                  vibe: "Minimal, Piano, Bass",
+                },
+                { title: "Trampoline", artist: "SHAED", vibe: "Whistle hook" },
+                {
+                  title: "Come Down",
+                  artist: "Anderson .Paak",
+                  vibe: "Groovy, Driving Bass",
+                },
+                { title: "Bang!", artist: "AJR", vibe: "Punchy, Quirky" },
+                {
+                  title: "All Night",
+                  artist: "Big Boi",
+                  vibe: "Upbeat, Fun, Piano",
+                },
+              ],
+            },
+            {
+              name: "Samsung",
+              tag: "Tech / Mobile",
+              desc: "Often mirrors Apple but leans slightly more Mainstream Pop and High-Energy Electronic. Less 'weird', more 'anthemic'.",
+              fingerprint: [85, 30, 70, 90, 60],
+              genres: ["Pop", "EDM", "Rock"],
+              songs: [
+                {
+                  title: "Rocket Man (Remix)",
+                  artist: "Elton John",
+                  vibe: "Nostalgic, Epic",
+                },
+                {
+                  title: "Over the Horizon",
+                  artist: "Suga (BTS)",
+                  vibe: "Instrumental Pop",
+                },
+                {
+                  title: "Unstoppable",
+                  artist: "Sia",
+                  vibe: "Empowering Anthem",
+                },
+                {
+                  title: "A Little Less Conversation",
+                  artist: "JXL Remix",
+                  vibe: "Driving, Classic",
+                },
+                { title: "Make It Right", artist: "BTS", vibe: "Clean Pop" },
+              ],
+            },
+            {
+              name: "Nike",
+              tag: "Sports / Apparel",
+              desc: "Gritty, sweaty, motivational. Heavy use of Hip-Hop, Trap, and distorted Rock. Sound design is crucial (breath, stomps).",
+              fingerprint: [95, 60, 80, 60, 90], // High Lyric importance (Motivation)
+              genres: ["Hip-Hop", "Trap", "Garage Rock"],
+              songs: [
+                {
+                  title: "Black Skinhead",
+                  artist: "Kanye West",
+                  vibe: "Aggressive, Driving",
+                },
+                {
+                  title: "Shutdown",
+                  artist: "Skepta",
+                  vibe: "Grime, Intensity",
+                },
+                {
+                  title: "Legend Has It",
+                  artist: "Run The Jewels",
+                  vibe: "Rhythmic, Punchy",
+                },
+                {
+                  title: "Seven Nation Army",
+                  artist: "The White Stripes",
+                  vibe: "Iconic Riff, Stomp",
+                },
+                {
+                  title: "Victory",
+                  artist: "Joey Bada$$",
+                  vibe: "Triumphant, Lyrical",
+                },
+              ],
+            },
+            {
+              name: "Coca-Cola",
+              tag: "Food / Bev",
+              desc: "Warm, fuzzy, connection-based. 'Holidays are coming' vibes year-round. Soulful pop, acoustic warmth, hummable melodies.",
+              fingerprint: [50, 90, 40, 95, 60],
+              genres: ["Soul", "Acoustic Pop", "R&B"],
+              songs: [
+                {
+                  title: "Taste the Feeling",
+                  artist: "Avicii",
+                  vibe: "Anthemic, Happy",
+                },
+                {
+                  title: "I'll Be There",
+                  artist: "Jess Glynne",
+                  vibe: "Supportive, Vocal",
+                },
+                {
+                  title: "Brother",
+                  artist: "Needtobreathe",
+                  vibe: "Acoustic, Stomp-Clap",
+                },
+                {
+                  title: "Lovely Day",
+                  artist: "Bill Withers",
+                  vibe: "Classic, Warm",
+                },
+                {
+                  title: "Be The One",
+                  artist: "Dua Lipa",
+                  vibe: "Synth Pop, Joy",
+                },
+              ],
+            },
+          ],
+        },
+        TV: {
+          insight:
+            "TV uses music for emotional continuity. 'Sync moments' happen at the end of episodes (montages). Lyrics must match the scene's unspoken subtext.",
+          brands: [
+            {
+              name: "Grey's Anatomy",
+              tag: "Network Drama",
+              desc: "The gold standard for 'Sad Indie'. Acoustic covers of 80s hits, slow-building piano ballads, breathless vocals.",
+              fingerprint: [30, 95, 60, 70, 95], // High Emotion, High Lyrics
+              genres: ["Singer-Songwriter", "Piano Ballad", "Indie Folk"],
+              songs: [
+                {
+                  title: "Chasing Cars",
+                  artist: "Snow Patrol",
+                  vibe: "The Blueprint",
+                },
+                {
+                  title: "How to Save a Life",
+                  artist: "The Fray",
+                  vibe: "Mid-tempo, Piano",
+                },
+                {
+                  title: "Keep Breathing",
+                  artist: "Ingrid Michaelson",
+                  vibe: "Vulnerable, Acoustic",
+                },
+                {
+                  title: "Where Does the Good Go",
+                  artist: "Tegan and Sara",
+                  vibe: "Indie Pop",
+                },
+                {
+                  title: "Youth",
+                  artist: "Daughter",
+                  vibe: "Atmospheric, Moody",
+                },
+              ],
+            },
+            {
+              name: "Netflix (Teen/YA)",
+              tag: "Streaming / Dramedy",
+              desc: "Think 'Emily in Paris' or 'Sex Education'. Trendy, fashion-forward, often French Pop, upbeat Indie, or retro 80s synth.",
+              fingerprint: [75, 50, 80, 85, 50],
+              genres: ["Synth Pop", "Indie Rock", "French Pop"],
+              songs: [
+                { title: "Boys", artist: "Lizzo", vibe: "Fun, Confident" },
+                {
+                  title: "Do It Like This",
+                  artist: "Daphne Willis",
+                  vibe: "Swagger, Brass",
+                },
+                {
+                  title: "I Like It",
+                  artist: "Cardi B",
+                  vibe: "Party, Montage",
+                },
+                {
+                  title: "Past Lives",
+                  artist: "BØRNS",
+                  vibe: "Dreamy, Romantic",
+                },
+                {
+                  title: "Talk Too Much",
+                  artist: "COIN",
+                  vibe: "Guitar Pop, Upbeat",
+                },
+              ],
+            },
+            {
+              name: "HBO (Prestige)",
+              tag: "Drama / Thriller",
+              desc: "Succession, Euphoria. Needs high artistic integrity. Labrinth-style production, score-heavy, dark, tension-building.",
+              fingerprint: [60, 80, 95, 40, 40],
+              genres: ["Experimental", "Score-Hybrid", "Soul"],
+              songs: [
+                {
+                  title: "All For Us",
+                  artist: "Labrinth",
+                  vibe: "Cinematic, Choral",
+                },
+                {
+                  title: "Mount Everest",
+                  artist: "Labrinth",
+                  vibe: "Dark, Bass-heavy",
+                },
+                {
+                  title: "Cold Little Heart",
+                  artist: "Michael Kiwanuka",
+                  vibe: "Retro Soul",
+                },
+                {
+                  title: "Red Right Hand",
+                  artist: "Nick Cave",
+                  vibe: "Ominous, Narrative",
+                },
+                { title: "Exit Music", artist: "Radiohead", vibe: "Slow Burn" },
+              ],
+            },
+          ],
+        },
+        Games: {
+          insight:
+            "Video Games pay well and offer huge exposure. FIFA (FC) is the biggest indie breaker. Need tracks that don't get annoying on loop.",
+          brands: [
+            {
+              name: "EA Sports FC (FIFA)",
+              tag: "Sports / Global",
+              desc: "The 'World Music' melting pot. Upbeat, rhythmic, multicultural. Indie Rock meets Afrobeat meets Latin Pop.",
+              fingerprint: [85, 40, 80, 90, 30], // High Catchiness, Global Vibe
+              genres: ["Indie Electronic", "Afrobeat", "Alt-Rock"],
+              songs: [
+                { title: "The Nights", artist: "Avicii", vibe: "Anthemic" },
+                {
+                  title: "Love Me Again",
+                  artist: "John Newman",
+                  vibe: "Soul Pop, Driving",
+                },
+                {
+                  title: "Heat Waves",
+                  artist: "Glass Animals",
+                  vibe: "Psychedelic Pop",
+                },
+                {
+                  title: "Finesse",
+                  artist: "Pheelz",
+                  vibe: "Afro-Pop, Feelgood",
+                },
+                {
+                  title: "Club Foot",
+                  artist: "Kasabian",
+                  vibe: "Aggressive Rock",
+                },
+              ],
+            },
+            {
+              name: "Fortnite (Radio)",
+              tag: "Battle Royale",
+              desc: "Current Hits and Viral Tracks. If it's trending on TikTok, it's on the car radio in Fortnite. High energy Hip-Hop and Pop.",
+              fingerprint: [90, 20, 60, 95, 50],
+              genres: ["Trap", "Top 40", "Viral Pop"],
+              songs: [
+                {
+                  title: "Blinding Lights",
+                  artist: "The Weeknd",
+                  vibe: "Retro Synth",
+                },
+                { title: "Montero", artist: "Lil Nas X", vibe: "Hook-heavy" },
+                { title: "Say So", artist: "Doja Cat", vibe: "Disco Pop" },
+                {
+                  title: "Blueberry Faygo",
+                  artist: "Lil Mosey",
+                  vibe: "Melodic Rap",
+                },
+                { title: "Rockstar", artist: "DaBaby", vibe: "Heavy Bass" },
+              ],
+            },
+          ],
+        },
+        Trailers: {
+          insight:
+            "Trailers are their own beast. They need 'Trailerization': Stops, Starts, Risers, Hits, and the 'Braaam' sound. Often covers of classics.",
+          brands: [
+            {
+              name: "Action Blockbuster",
+              tag: "Marvel / Fast & Furious",
+              desc: "Hybrid Orchestral. Rock riffs mixed with orchestra. Sound design is more important than melody. Epic covers.",
+              fingerprint: [95, 70, 60, 50, 20], // High Energy, Low catchiness (it's about impact)
+              genres: ["Hybrid Orchestral", "Epic Rock", "Trailer Pop"],
+              songs: [
+                {
+                  title: "Immigrant Song",
+                  artist: "Led Zeppelin",
+                  vibe: "Driving Rhythm",
+                },
+                {
+                  title: "Come Together",
+                  artist: "Gary Clark Jr.",
+                  vibe: "Gritty Rock Cover",
+                },
+                {
+                  title: "Seven Nation Army",
+                  artist: "White Stripes",
+                  vibe: "Electronic Remix",
+                },
+                {
+                  title: "Believer",
+                  artist: "Imagine Dragons",
+                  vibe: "Stomp, percussive",
+                },
+                {
+                  title: "Gangsta's Paradise",
+                  artist: "2WEI",
+                  vibe: "Epic Orchestral",
+                },
+              ],
+            },
+            {
+              name: "Indie / A24",
+              tag: "Psychological / Drama",
+              desc: "Unsettling, sparse. Ticking clocks, single piano notes, dissonant strings. Creates unease.",
+              fingerprint: [40, 90, 90, 20, 30],
+              genres: ["Avant-Garde", "Solo Strings", "Minimal"],
+              songs: [
+                {
+                  title: "Burn the Witch",
+                  artist: "Radiohead",
+                  vibe: "Tension, Strings",
+                },
+                {
+                  title: "On The Nature of Daylight",
+                  artist: "Max Richter",
+                  vibe: "Sorrowful Strings",
+                },
+                {
+                  title: "Suspirium",
+                  artist: "Thom Yorke",
+                  vibe: "Haunting Piano",
+                },
+                {
+                  title: "Getting There",
+                  artist: "Flying Lotus",
+                  vibe: "Experimental",
+                },
+                {
+                  title: "Hereditary Score",
+                  artist: "Colin Stetson",
+                  vibe: "Saxophone drone",
+                },
+              ],
+            },
+          ],
+        },
+        Influencer: {
+          insight:
+            "YouTube/Instagram/TikTok background music. Needs to be non-intrusive but keep momentum. 'Vlog Music'.",
+          brands: [
+            {
+              name: "Tech Reviewers",
+              tag: "MKBHD / Unbox Therapy",
+              desc: "Lo-Fi Hip Hop, Chillhop, Clean Electronic. No vocals (distracting). crisp drums.",
+              fingerprint: [40, 20, 50, 70, 10], // Low Lyrics
+              genres: ["Lo-Fi", "Chillhop", "Instrumental Hip-Hop"],
+              songs: [
+                { title: "Snowman", artist: "WYS", vibe: "Chill, Beat-driven" },
+                {
+                  title: "Affection",
+                  artist: "Jinsang",
+                  vibe: "Sample-based, Warm",
+                },
+                { title: "Eternal Youth", artist: "Rude.", vibe: "Melodic" },
+                {
+                  title: "Can't Take My Eyes Off You",
+                  artist: "Lofi Cover",
+                  vibe: "Nostalgic",
+                },
+                {
+                  title: "Morning",
+                  artist: "LiQWYD",
+                  vibe: "Royalty Free Style",
+                },
+              ],
+            },
+            {
+              name: "Travel Vloggers",
+              tag: "Lost LeBlanc / Kara & Nate",
+              desc: "Tropical House, Future Bass, Inspiring Builds. The 'Drone Shot' music. High energy drops.",
+              fingerprint: [80, 60, 50, 80, 30],
+              genres: ["Tropical House", "Future Bass", "Pop"],
+              songs: [
+                {
+                  title: "Firestone",
+                  artist: "Kygo",
+                  vibe: "Tropical, Plucks",
+                },
+                {
+                  title: "Fade",
+                  artist: "Alan Walker",
+                  vibe: "Electronic, Build",
+                },
+                {
+                  title: "High On Life",
+                  artist: "Martin Garrix",
+                  vibe: "Festival Energy",
+                },
+                {
+                  title: "Sunset Lover",
+                  artist: "Petit Biscuit",
+                  vibe: "Vocal Chops",
+                },
+                { title: "Island", artist: "Jarico", vibe: "Bouncy, Bright" },
+              ],
+            },
+          ],
+        },
+      };
+
+      // --- STATE MANAGEMENT ---
+      let currentCategory = "Ads";
+      let currentBrandIndex = 0;
+      let currentBrand = null;
+      let radarChartInstance = null;
+      let barChartInstance = null;
+
+      // --- INIT ---
+      window.addEventListener("DOMContentLoaded", () => {
+        setCategory("Ads");
+        
+        // Search Listener
+        document.getElementById('brand-search').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const buttons = document.querySelectorAll('#mobile-brand-list button');
+            buttons.forEach(btn => {
+                const text = btn.innerText.toLowerCase();
+                btn.style.display = text.includes(term) ? 'block' : 'none';
+            });
+        });
+      });
+
+      // --- FUNCTIONS ---
+
+      function toggleBottomSheet(show) {
+        const sheet = document.getElementById("brand-sheet");
+        const overlay = document.getElementById("brand-sheet-overlay");
+        if (show) {
+          sheet.classList.add("open");
+          overlay.classList.add("open");
+        } else {
+          sheet.classList.remove("open");
+          overlay.classList.remove("open");
+        }
+      }
+
+      function toggleDescription() {
+        const desc = document.getElementById("brand-desc");
+        const btn = document.getElementById("read-more-btn");
+        const isCollapsed = desc.classList.toggle("line-clamp-2");
+        btn.innerText = isCollapsed ? "Read More" : "Show Less";
+      }
+
+      function scrollToSection(id) {
+        document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        // Simple active state toggle
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+      }
+
+      function setCategory(category) {
+        currentCategory = category;
+
+        // Update Tabs
+        document.querySelectorAll('button[id^="tab-"]').forEach((btn) => {
+          btn.className =
+            "no-tap-highlight px-6 py-2 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-full border border-[var(--border-color)] bg-transparent text-[var(--secondary-text)] hover:text-[var(--primary-text)]";
+        });
+        document.getElementById(`tab-${category}`).className =
+          "no-tap-highlight px-6 py-2 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-full border border-purple bg-[var(--bg-card)] text-purple";
+
+        // Update Insight
+        const catData = syncData[category];
+        document.getElementById("category-insight").innerText = catData.insight;
+
+        // Populate Desktop Brand List
+        const brandList = document.getElementById("brand-list");
+        populateBrandList(brandList, catData, category, false);
+
+        // Populate Mobile Brand List
+        const mobileList = document.getElementById("mobile-brand-list");
+        populateBrandList(mobileList, catData, category, true);
+
+        // Select first brand by default
+        selectBrand(category, 0, null);
+      }
+
+      function populateBrandList(container, catData, category, isMobile) {
+        container.innerHTML = "";
+        catData.brands.forEach((brand, index) => {
+          const btn = document.createElement("button");
+          // Different styling for mobile vs desktop list? Keeping consistent for now
+          const baseClass = isMobile 
+            ? "text-left px-5 py-4 rounded-xl text-lg font-bold transition-all w-full border bg-[var(--bg-card)] border-[var(--border-color)] text-[var(--primary-text)]"
+            : `text-left px-5 py-4 rounded-2xl text-sm font-bold transition-all w-full border ${
+            index === 0
+              ? "bg-purple text-white border-purple"
+              : "bg-[var(--bg-color)] text-[var(--secondary-text)] hover:bg-[var(--highlight-bg)] hover:text-[var(--primary-text)] border-[var(--border-color)]"
+          }`;
+          
+          btn.className = baseClass;
+          // Add ID for selection targeting
+          btn.dataset.brandIndex = index;
+          
+          btn.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="tracking-wide uppercase">${brand.name}</span>
+                        ${!isMobile ? `<span class="brand-dot text-lg ${index === 0 ? '' : 'invisible'}">●</span>` : ''}
+                    </div>
+                `;
+          btn.onclick = () => {
+              currentBrandIndex = index;
+              selectBrand(category, index, btn);
+              if (isMobile) toggleBottomSheet(false);
+          };
+          container.appendChild(btn);
+        });
+      }
+
+      function generateSearchLinks(title, artist) {
+        const query = encodeURIComponent(`${title} ${artist}`);
+        return {
+          spotify: `https://open.spotify.com/search/${query}`,
+          apple: `https://music.apple.com/us/search?term=${query}`,
+        };
+      }
+
+      function selectBrand(category, index, btnElement) {
+        // Visual update for list (Desktop)
+        const list = document.getElementById("brand-list");
+        Array.from(list.children).forEach((b) => {
+            if(parseInt(b.dataset.brandIndex) === index) {
+                b.className = "text-left px-5 py-4 rounded-2xl text-sm font-bold transition-all w-full border bg-purple text-white border-purple";
+                const dot = b.querySelector('.brand-dot');
+                if (dot) dot.classList.remove('invisible');
+            } else {
+                b.className = "text-left px-5 py-4 rounded-2xl text-sm font-bold transition-all w-full border bg-[var(--bg-color)] text-[var(--secondary-text)] hover:bg-[var(--highlight-bg)] hover:text-[var(--primary-text)] border-[var(--border-color)]";
+                const dot = b.querySelector('.brand-dot');
+                if (dot) dot.classList.add('invisible');
+            }
+        });
+
+        const brandData = syncData[category].brands[index];
+        currentBrand = brandData;
+
+        // Update Content Info
+        document.getElementById("brand-name").innerText = brandData.name;
+        document.getElementById("brand-name-mobile").innerText = brandData.name;
+        document.getElementById("brand-tag").innerText = brandData.tag;
+        const descEl = document.getElementById("brand-desc");
+        descEl.innerText = brandData.desc;
+        
+        // Reset read more
+        descEl.classList.add("line-clamp-2");
+        document.getElementById("read-more-btn").innerText = "Read More";
+
+        // Update Song List
+        const songList = document.getElementById("song-list");
+        songList.innerHTML = "";
+
+        // Inline SVGs (Same as before)
+        const spotifyIcon = `<svg viewBox="0 0 24 24" fill="currentColor" class="text-[#1DB954]"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>`;
+        const appleIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 361 361"><path fill="#FA233B" d="M180,361C80.6,361,0,280.4,0,181C0,81.6,80.6,1,180,1c99.4,0,180,80.6,180,180C360,280.4,279.4,361,180,361z"/><path fill="#FFFFFF" d="M254.5,55c-0.87,0.08-8.6,1.45-9.53,1.64l-107,21.59l-0.04,0.01c-2.79,0.59-4.98,1.58-6.67,3c-2.04,1.71-3.17,4.13-3.6,6.95c-0.09,0.6-0.24,1.82-0.24,3.62c0,0,0,109.32,0,133.92c0,3.13-0.25,6.17-2.37,8.76c-2.12,2.59-4.74,3.37-7.81,3.99c-2.33,0.47-4.66,0.94-6.99,1.41c-8.84,1.78-14.59,2.99-19.8,5.01c-4.98,1.93-8.71,4.39-11.68,7.51c-5.89,6.17-8.28,14.54-7.46,22.38c0.7,6.69,3.71,13.09,8.88,17.82c3.49,3.2,7.85,5.63,12.99,6.66c5.33,1.07,11.01,0.7,19.31-0.98c4.42-0.89,8.56-2.28,12.5-4.61c3.9-2.3,7.24-5.37,9.85-9.11c2.62-3.75,4.31-7.92,5.24-12.35c0.96-4.57,1.19-8.7,1.19-13.26l0-116.15c0-6.22,1.76-7.86,6.78-9.08c0,0,88.94-17.94,93.09-18.75c5.79-1.11,8.52,0.54,8.52,6.61l0,79.29c0,3.14-0.03,6.32-2.17,8.92c-2.12,2.59-4.74,3.37-7.81,3.99c-2.33,0.47-4.66,0.94-6.99,1.41c-8.84,1.78-14.59,2.99-19.8,5.01c-4.98,1.93-8.71,4.39-11.68,7.51c-5.89,6.17-8.49,14.54-7.67,22.38c0.7,6.69,3.92,13.09,9.09,17.82c3.49,3.2,7.85,5.56,12.99,6.6c5.33,1.07,11.01,0.69,19.31-0.98c4.42-0.89,8.56-2.22,12.5-4.55c3.9-2.3,7.24-5.37,9.85-9.11c2.62-3.75,4.31-7.92,5.24-12.35c0.96-4.57,1-8.7,1-13.26V64.46C263.54,58.3,260.29,54.5,254.5,55z"/></svg>`;
+
+        brandData.songs.forEach((song, i) => {
+          const links = generateSearchLinks(song.title, song.artist);
+           const row = document.createElement("div");
+          // UPDATED: Card style for horizontal scroll
+          row.className =
+            "song-item flex-none w-[85%] lg:w-full snap-center lg:snap-align-none flex items-start gap-4 p-5 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-card)] lg:bg-[var(--bg-color)] hover:border-purple transition-all group shadow-sm";
+
+          row.innerHTML = `
+                    <div class="text-[var(--secondary-text)] font-bold text-sm pt-1 group-hover:text-purple transition-colors">0${i + 1}</div>
+                    <div class="flex-grow flex flex-col gap-2">
+                        <!-- Top Row: Song Info -->
+                        <div class="flex flex-col">
+                            <div class="text-lg font-bold text-[var(--primary-text)] leading-tight line-clamp-1">${song.title}</div>
+                            <div class="text-sm text-[var(--secondary-text)] mt-1 line-clamp-1">${song.artist}</div>
+                        </div>
+
+                        <!-- Vibe Badge (Context) -->
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--primary-text)] bg-[var(--border-color)] px-2 py-1 rounded-lg inline-block self-start border border-[var(--border-color)] group-hover:border-purple transition-colors">
+                            ${song.vibe}
+                        </div>
+                        
+                        <!-- Bottom Row: Buttons (New Line) -->
+                        <div class="flex items-center gap-3 mt-1 pt-3 border-t border-[var(--border-color)] group-hover:border-[rgba(116,86,241,0.3)] transition-colors w-full justify-between">
+                            <span class="text-[10px] text-[var(--secondary-text)] uppercase font-bold">Listen On</span>
+                            <div class="flex gap-2">
+                              <a href="${links.spotify}" target="_blank" rel="noopener noreferrer" 
+                                 class="btn-platform" title="Open in Spotify">
+                                 ${spotifyIcon}
+                              </a>
+                              <a href="${links.apple}" target="_blank" rel="noopener noreferrer" 
+                                 class="btn-platform" title="Open in Apple Music">
+                                 ${appleIcon}
+                              </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+          songList.appendChild(row);
+        });
+
+        // Update Charts
+        updateCharts(brandData);
+      }
+
+      function updateCharts(brandData) {
+        const isLight = document.body.classList.contains("light-mode");
+        
+        // Theme Colors
+        const gridColor = isLight ? "#E5E7EB" : "#2d3b4e";
+        const textColor = isLight ? "#4B5563" : "#9ca3af";
+        const angleLineColor = isLight ? "#d1d5db" : "#E0DCD5";
+        
+        // Radar Chart (Sonic Fingerprint)
+        const ctxRadar = document.getElementById("radarChart").getContext("2d");
+
+        if (radarChartInstance) {
+          radarChartInstance.destroy();
+        }
+
+        radarChartInstance = new Chart(ctxRadar, {
+          type: "radar",
+          data: {
+            labels: [
+              "Energy",
+              "Emotion",
+              "Uniqueness",
+              "Catchiness",
+              "Lyrical Depth",
+            ],
+            datasets: [
+              {
+                label: brandData.name,
+                data: brandData.fingerprint,
+                fill: true,
+                backgroundColor: "rgba(116, 86, 241, 0.2)", // Purple, low opacity
+                borderColor: "#7456F1", // Purple
+                pointBackgroundColor: "#7456F1",
+                pointBorderColor: "#fff",
+                pointHoverBackgroundColor: "#fff",
+                pointHoverBorderColor: "#7456F1",
+              },
+            ],
+          },
+          options: {
+            maintainAspectRatio: false,
+            responsive: true,
+            scales: {
+              r: {
+                angleLines: { color: angleLineColor },
+                grid: { color: gridColor },
+                pointLabels: {
+                  font: { size: 11, family: "Figtree" },
+                  color: textColor,
+                },
+                suggestedMin: 0,
+                suggestedMax: 100,
+                ticks: { display: false }, // Hide numbers for cleaner look
+              },
+            },
+            plugins: {
+              legend: { display: false },
+            },
+          },
+        });
+
+        // Bar Chart (Genres)
+        const ctxBar = document.getElementById("barChart").getContext("2d");
+
+        if (barChartInstance) {
+          barChartInstance.destroy();
+        }
+
+        barChartInstance = new Chart(ctxBar, {
+          type: "bar",
+          data: {
+            labels: brandData.genres,
+            datasets: [
+              {
+                label: "Relevance",
+                data: [90, 70, 50], // Dummy data
+                backgroundColor: ["#7456F1", "#5e45c4", "#1a2c42"],
+                borderRadius: 4,
+              },
+            ],
+          },
+          options: {
+            maintainAspectRatio: false,
+            responsive: true,
+            indexAxis: "y", // Horizontal Bar
+            scales: {
+              x: { display: false },
+              y: {
+                grid: { display: false },
+                ticks: {
+                  font: { family: "Figtree" },
+                  color: textColor,
+                },
+              },
+            },
+            plugins: {
+              legend: { display: false },
+            },
+          },
+        });
+      }
+    </script>
+  </body>
+</html>

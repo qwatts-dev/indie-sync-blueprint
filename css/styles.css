@@ -1,0 +1,389 @@
+/* =============================================
+   Indie Sync Blueprint — Styles
+   ============================================= */
+
+/* ----- CSS Variables (Theme Tokens) ----- */
+:root {
+  --bg-color: #102136;
+  --bg-card: #1a2c42;
+  --bg-footer: #0b1624;
+  --primary-text: #ffffff;
+  --secondary-text: #9ca3af;
+  --muted-text: #6b7280;
+  --accent-color: #7456f1;
+  --accent-hover: #5e45c4;
+  --border-color: #2d3b4e;
+  --highlight-bg: #1a2c42;
+  --glass-bg: rgba(16, 33, 54, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.light-mode {
+  --bg-color: #f9fafb;
+  --bg-card: #ffffff;
+  --bg-footer: #f3f4f6;
+  --primary-text: #111827;
+  --secondary-text: #4b5563;
+  --muted-text: #9ca3af;
+  --border-color: #e5e7eb;
+  --highlight-bg: #ffffff;
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+}
+
+/* ----- Base ----- */
+body {
+  background-color: var(--bg-color);
+  color: var(--primary-text);
+  font-family: "Figtree", sans-serif;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+/* ----- Chart Containers ----- */
+.chart-container {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  height: 300px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .chart-container {
+    height: 350px;
+  }
+}
+
+/* ----- Custom Scrollbar ----- */
+.custom-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scroll::-webkit-scrollbar-track {
+  background: var(--highlight-bg);
+}
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 3px;
+}
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ----- Tabs ----- */
+.tab-active {
+  border-bottom: 2px solid var(--accent-color);
+  color: var(--primary-text);
+  font-weight: 600;
+}
+
+.tab-inactive {
+  color: var(--secondary-text);
+  border-bottom: 2px solid transparent;
+}
+.tab-inactive:hover {
+  color: var(--accent-color);
+}
+
+/* ----- Song Items ----- */
+.song-item {
+  transition: background-color 0.2s ease;
+}
+.song-item:hover {
+  background-color: var(--highlight-bg);
+}
+
+/* ----- Platform Buttons ----- */
+.btn-platform {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+.btn-platform:hover {
+  border-color: #d1d5db;
+  background-color: #f9fafb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+.btn-platform svg {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+/* ----- No Tap Highlight ----- */
+.no-tap-highlight {
+  -webkit-tap-highlight-color: transparent;
+  outline: none !important;
+  box-shadow: none !important;
+}
+.no-tap-highlight:focus,
+.no-tap-highlight:focus-visible,
+.no-tap-highlight:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* ----- Toggle Switch ----- */
+.toggle-checkbox {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-label {
+  width: 44px;
+  height: 24px;
+  position: relative;
+  display: block;
+  background: var(--bg-card);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in;
+  border: 1px solid var(--border-color);
+}
+
+.toggle-label:before {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s ease-in;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.toggle-checkbox:checked + .toggle-label {
+  background-color: #7456f1;
+  border-color: #7456f1;
+}
+
+.toggle-checkbox:checked + .toggle-label:before {
+  transform: translateX(20px);
+}
+
+/* ----- Logo Theme Visibility ----- */
+.logo-light {
+  display: block;
+}
+.logo-dark {
+  display: none;
+}
+.light-mode .logo-light {
+  display: none;
+}
+.light-mode .logo-dark {
+  display: block;
+}
+
+/* ----- Liquid Glass Navbar ----- */
+.nav-pill {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  width: 90%;
+  max-width: 1000px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 9999px;
+  box-shadow: var(--glass-shadow);
+  transition:
+    background 0.3s ease,
+    border 0.3s ease,
+    box-shadow 0.3s ease;
+  overflow: hidden;
+}
+
+/* ----- Mobile Bottom Nav ----- */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(16, 33, 54, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--glass-border);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  z-index: 100;
+}
+
+.light-mode .bottom-nav {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--secondary-text);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  min-width: 64px;
+  padding: 4px 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-item.active {
+  color: var(--accent-color);
+}
+.nav-item svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* ----- Bottom Sheet ----- */
+.bottom-sheet-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.bottom-sheet-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.bottom-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: var(--bg-card);
+  border-radius: 24px 24px 0 0;
+  padding: 24px;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: 201;
+  max-height: 80vh;
+  overflow-y: auto;
+  border-top: 1px solid var(--border-color);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
+}
+.bottom-sheet.open {
+  transform: translateY(0);
+}
+
+/* ----- Snap Scroll Carousel ----- */
+.snap-scroll-x {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 16px;
+  padding-bottom: 16px;
+  width: 100%;
+}
+
+.snap-card {
+  flex: 0 0 85%;
+  scroll-snap-align: center;
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+}
+
+/* ----- Collapsible Text ----- */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.expanded {
+  -webkit-line-clamp: unset;
+}
+
+/* ----- Liquid Background ----- */
+.liquid-bg {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at center,
+    rgba(116, 86, 241, 0.15),
+    transparent 60%
+  );
+  opacity: 0.6;
+  z-index: -1;
+  filter: url(#liquid-flow);
+  animation: liquidMove 20s infinite linear;
+  pointer-events: none;
+}
+
+@keyframes liquidMove {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ----- Layout ----- */
+
+/* ----- Responsive ----- */
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+  .chart-container-mobile {
+    height: 250px;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none !important;
+  }
+}

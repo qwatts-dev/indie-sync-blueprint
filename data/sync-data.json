@@ -1,0 +1,453 @@
+{
+  "_meta": {
+    "version": "2.0.0",
+    "lastUpdated": "2026-02-10",
+    "source": "Gemini Deep Research + Manual Curation",
+    "fingerprintAxes": [
+      "Energy",
+      "Emotion",
+      "Uniqueness",
+      "Catchiness",
+      "Lyrical Depth"
+    ],
+    "fingerprintScale": { "min": 0, "max": 100 }
+  },
+  "categories": {
+    "Ads": {
+      "label": "Commercials",
+      "insight": "Ads require immediate hooks. Intro must be catchy (1-3 seconds). Lyrics should be universal (Freedom, Fun, Color, New). High sync fees, shorter shelf life.",
+      "brands": [
+        {
+          "name": "Apple",
+          "tag": "Tech / Lifestyle",
+          "desc": "The 'Holy Grail' of sync. Looking for distinct, quirky, bass-heavy, or catchy Indie Pop. Often creates careers.",
+          "fingerprint": [90, 40, 95, 80, 70],
+          "genres": ["Indie Pop", "Electronic", "Alt-Hip Hop"],
+          "songs": [
+            {
+              "title": "Down",
+              "artist": "Marian Hill",
+              "vibe": "Minimal, Piano, Bass"
+            },
+            {
+              "title": "Trampoline",
+              "artist": "SHAED",
+              "vibe": "Whistle hook"
+            },
+            {
+              "title": "Come Down",
+              "artist": "Anderson .Paak",
+              "vibe": "Groovy, Driving Bass"
+            },
+            { "title": "Bang!", "artist": "AJR", "vibe": "Punchy, Quirky" },
+            {
+              "title": "All Night",
+              "artist": "Big Boi",
+              "vibe": "Upbeat, Fun, Piano"
+            }
+          ]
+        },
+        {
+          "name": "Samsung",
+          "tag": "Tech / Mobile",
+          "desc": "Often mirrors Apple but leans slightly more Mainstream Pop and High-Energy Electronic. Less 'weird', more 'anthemic'.",
+          "fingerprint": [85, 30, 70, 90, 60],
+          "genres": ["Pop", "EDM", "Rock"],
+          "songs": [
+            {
+              "title": "Rocket Man (Remix)",
+              "artist": "Elton John",
+              "vibe": "Nostalgic, Epic"
+            },
+            {
+              "title": "Over the Horizon",
+              "artist": "Suga (BTS)",
+              "vibe": "Instrumental Pop"
+            },
+            {
+              "title": "Unstoppable",
+              "artist": "Sia",
+              "vibe": "Empowering Anthem"
+            },
+            {
+              "title": "A Little Less Conversation",
+              "artist": "JXL Remix",
+              "vibe": "Driving, Classic"
+            },
+            { "title": "Make It Right", "artist": "BTS", "vibe": "Clean Pop" }
+          ]
+        },
+        {
+          "name": "Nike",
+          "tag": "Sports / Apparel",
+          "desc": "Gritty, sweaty, motivational. Heavy use of Hip-Hop, Trap, and distorted Rock. Sound design is crucial (breath, stomps).",
+          "fingerprint": [95, 60, 80, 60, 90],
+          "genres": ["Hip-Hop", "Trap", "Garage Rock"],
+          "songs": [
+            {
+              "title": "Black Skinhead",
+              "artist": "Kanye West",
+              "vibe": "Aggressive, Driving"
+            },
+            {
+              "title": "Shutdown",
+              "artist": "Skepta",
+              "vibe": "Grime, Intensity"
+            },
+            {
+              "title": "Legend Has It",
+              "artist": "Run The Jewels",
+              "vibe": "Rhythmic, Punchy"
+            },
+            {
+              "title": "Seven Nation Army",
+              "artist": "The White Stripes",
+              "vibe": "Iconic Riff, Stomp"
+            },
+            {
+              "title": "Victory",
+              "artist": "Joey Bada$$",
+              "vibe": "Triumphant, Lyrical"
+            }
+          ]
+        },
+        {
+          "name": "Coca-Cola",
+          "tag": "Food / Bev",
+          "desc": "Warm, fuzzy, connection-based. 'Holidays are coming' vibes year-round. Soulful pop, acoustic warmth, hummable melodies.",
+          "fingerprint": [50, 90, 40, 95, 60],
+          "genres": ["Soul", "Acoustic Pop", "R&B"],
+          "songs": [
+            {
+              "title": "Taste the Feeling",
+              "artist": "Avicii",
+              "vibe": "Anthemic, Happy"
+            },
+            {
+              "title": "I'll Be There",
+              "artist": "Jess Glynne",
+              "vibe": "Supportive, Vocal"
+            },
+            {
+              "title": "Brother",
+              "artist": "Needtobreathe",
+              "vibe": "Acoustic, Stomp-Clap"
+            },
+            {
+              "title": "Lovely Day",
+              "artist": "Bill Withers",
+              "vibe": "Classic, Warm"
+            },
+            {
+              "title": "Be The One",
+              "artist": "Dua Lipa",
+              "vibe": "Synth Pop, Joy"
+            }
+          ]
+        }
+      ]
+    },
+    "TV": {
+      "label": "TV & Movies",
+      "insight": "TV uses music for emotional continuity. 'Sync moments' happen at the end of episodes (montages). Lyrics must match the scene's unspoken subtext.",
+      "brands": [
+        {
+          "name": "Grey's Anatomy",
+          "tag": "Network Drama",
+          "desc": "The gold standard for 'Sad Indie'. Acoustic covers of 80s hits, slow-building piano ballads, breathless vocals.",
+          "fingerprint": [30, 95, 60, 70, 95],
+          "genres": ["Singer-Songwriter", "Piano Ballad", "Indie Folk"],
+          "songs": [
+            {
+              "title": "Chasing Cars",
+              "artist": "Snow Patrol",
+              "vibe": "The Blueprint"
+            },
+            {
+              "title": "How to Save a Life",
+              "artist": "The Fray",
+              "vibe": "Mid-tempo, Piano"
+            },
+            {
+              "title": "Keep Breathing",
+              "artist": "Ingrid Michaelson",
+              "vibe": "Vulnerable, Acoustic"
+            },
+            {
+              "title": "Where Does the Good Go",
+              "artist": "Tegan and Sara",
+              "vibe": "Indie Pop"
+            },
+            {
+              "title": "Youth",
+              "artist": "Daughter",
+              "vibe": "Atmospheric, Moody"
+            }
+          ]
+        },
+        {
+          "name": "Netflix (Teen/YA)",
+          "tag": "Streaming / Dramedy",
+          "desc": "Think 'Emily in Paris' or 'Sex Education'. Trendy, fashion-forward, often French Pop, upbeat Indie, or retro 80s synth.",
+          "fingerprint": [75, 50, 80, 85, 50],
+          "genres": ["Synth Pop", "Indie Rock", "French Pop"],
+          "songs": [
+            { "title": "Boys", "artist": "Lizzo", "vibe": "Fun, Confident" },
+            {
+              "title": "Do It Like This",
+              "artist": "Daphne Willis",
+              "vibe": "Swagger, Brass"
+            },
+            {
+              "title": "I Like It",
+              "artist": "Cardi B",
+              "vibe": "Party, Montage"
+            },
+            {
+              "title": "Past Lives",
+              "artist": "BØRNS",
+              "vibe": "Dreamy, Romantic"
+            },
+            {
+              "title": "Talk Too Much",
+              "artist": "COIN",
+              "vibe": "Guitar Pop, Upbeat"
+            }
+          ]
+        },
+        {
+          "name": "HBO (Prestige)",
+          "tag": "Drama / Thriller",
+          "desc": "Succession, Euphoria. Needs high artistic integrity. Labrinth-style production, score-heavy, dark, tension-building.",
+          "fingerprint": [60, 80, 95, 40, 40],
+          "genres": ["Experimental", "Score-Hybrid", "Soul"],
+          "songs": [
+            {
+              "title": "All For Us",
+              "artist": "Labrinth",
+              "vibe": "Cinematic, Choral"
+            },
+            {
+              "title": "Mount Everest",
+              "artist": "Labrinth",
+              "vibe": "Dark, Bass-heavy"
+            },
+            {
+              "title": "Cold Little Heart",
+              "artist": "Michael Kiwanuka",
+              "vibe": "Retro Soul"
+            },
+            {
+              "title": "Red Right Hand",
+              "artist": "Nick Cave",
+              "vibe": "Ominous, Narrative"
+            },
+            {
+              "title": "Exit Music",
+              "artist": "Radiohead",
+              "vibe": "Slow Burn"
+            }
+          ]
+        }
+      ]
+    },
+    "Games": {
+      "label": "Video Games",
+      "insight": "Video Games pay well and offer huge exposure. FIFA (FC) is the biggest indie breaker. Need tracks that don't get annoying on loop.",
+      "brands": [
+        {
+          "name": "EA Sports FC (FIFA)",
+          "tag": "Sports / Global",
+          "desc": "The 'World Music' melting pot. Upbeat, rhythmic, multicultural. Indie Rock meets Afrobeat meets Latin Pop.",
+          "fingerprint": [85, 40, 80, 90, 30],
+          "genres": ["Indie Electronic", "Afrobeat", "Alt-Rock"],
+          "songs": [
+            { "title": "The Nights", "artist": "Avicii", "vibe": "Anthemic" },
+            {
+              "title": "Love Me Again",
+              "artist": "John Newman",
+              "vibe": "Soul Pop, Driving"
+            },
+            {
+              "title": "Heat Waves",
+              "artist": "Glass Animals",
+              "vibe": "Psychedelic Pop"
+            },
+            {
+              "title": "Finesse",
+              "artist": "Pheelz",
+              "vibe": "Afro-Pop, Feelgood"
+            },
+            {
+              "title": "Club Foot",
+              "artist": "Kasabian",
+              "vibe": "Aggressive Rock"
+            }
+          ]
+        },
+        {
+          "name": "Fortnite (Radio)",
+          "tag": "Battle Royale",
+          "desc": "Current Hits and Viral Tracks. If it's trending on TikTok, it's on the car radio in Fortnite. High energy Hip-Hop and Pop.",
+          "fingerprint": [90, 20, 60, 95, 50],
+          "genres": ["Trap", "Top 40", "Viral Pop"],
+          "songs": [
+            {
+              "title": "Blinding Lights",
+              "artist": "The Weeknd",
+              "vibe": "Retro Synth"
+            },
+            { "title": "Montero", "artist": "Lil Nas X", "vibe": "Hook-heavy" },
+            { "title": "Say So", "artist": "Doja Cat", "vibe": "Disco Pop" },
+            {
+              "title": "Blueberry Faygo",
+              "artist": "Lil Mosey",
+              "vibe": "Melodic Rap"
+            },
+            { "title": "Rockstar", "artist": "DaBaby", "vibe": "Heavy Bass" }
+          ]
+        }
+      ]
+    },
+    "Trailers": {
+      "label": "Trailers",
+      "insight": "Trailers are their own beast. They need 'Trailerization': Stops, Starts, Risers, Hits, and the 'Braaam' sound. Often covers of classics.",
+      "brands": [
+        {
+          "name": "Action Blockbuster",
+          "tag": "Marvel / Fast & Furious",
+          "desc": "Hybrid Orchestral. Rock riffs mixed with orchestra. Sound design is more important than melody. Epic covers.",
+          "fingerprint": [95, 70, 60, 50, 20],
+          "genres": ["Hybrid Orchestral", "Epic Rock", "Trailer Pop"],
+          "songs": [
+            {
+              "title": "Immigrant Song",
+              "artist": "Led Zeppelin",
+              "vibe": "Driving Rhythm"
+            },
+            {
+              "title": "Come Together",
+              "artist": "Gary Clark Jr.",
+              "vibe": "Gritty Rock Cover"
+            },
+            {
+              "title": "Seven Nation Army",
+              "artist": "White Stripes",
+              "vibe": "Electronic Remix"
+            },
+            {
+              "title": "Believer",
+              "artist": "Imagine Dragons",
+              "vibe": "Stomp, percussive"
+            },
+            {
+              "title": "Gangsta's Paradise",
+              "artist": "2WEI",
+              "vibe": "Epic Orchestral"
+            }
+          ]
+        },
+        {
+          "name": "Indie / A24",
+          "tag": "Psychological / Drama",
+          "desc": "Unsettling, sparse. Ticking clocks, single piano notes, dissonant strings. Creates unease.",
+          "fingerprint": [40, 90, 90, 20, 30],
+          "genres": ["Avant-Garde", "Solo Strings", "Minimal"],
+          "songs": [
+            {
+              "title": "Burn the Witch",
+              "artist": "Radiohead",
+              "vibe": "Tension, Strings"
+            },
+            {
+              "title": "On The Nature of Daylight",
+              "artist": "Max Richter",
+              "vibe": "Sorrowful Strings"
+            },
+            {
+              "title": "Suspirium",
+              "artist": "Thom Yorke",
+              "vibe": "Haunting Piano"
+            },
+            {
+              "title": "Getting There",
+              "artist": "Flying Lotus",
+              "vibe": "Experimental"
+            },
+            {
+              "title": "Hereditary Score",
+              "artist": "Colin Stetson",
+              "vibe": "Saxophone drone"
+            }
+          ]
+        }
+      ]
+    },
+    "Influencer": {
+      "label": "Influencers",
+      "insight": "YouTube/Instagram/TikTok background music. Needs to be non-intrusive but keep momentum. 'Vlog Music'.",
+      "brands": [
+        {
+          "name": "Tech Reviewers",
+          "tag": "MKBHD / Unbox Therapy",
+          "desc": "Lo-Fi Hip Hop, Chillhop, Clean Electronic. No vocals (distracting). crisp drums.",
+          "fingerprint": [40, 20, 50, 70, 10],
+          "genres": ["Lo-Fi", "Chillhop", "Instrumental Hip-Hop"],
+          "songs": [
+            {
+              "title": "Snowman",
+              "artist": "WYS",
+              "vibe": "Chill, Beat-driven"
+            },
+            {
+              "title": "Affection",
+              "artist": "Jinsang",
+              "vibe": "Sample-based, Warm"
+            },
+            { "title": "Eternal Youth", "artist": "Rude.", "vibe": "Melodic" },
+            {
+              "title": "Can't Take My Eyes Off You",
+              "artist": "Lofi Cover",
+              "vibe": "Nostalgic"
+            },
+            {
+              "title": "Morning",
+              "artist": "LiQWYD",
+              "vibe": "Royalty Free Style"
+            }
+          ]
+        },
+        {
+          "name": "Travel Vloggers",
+          "tag": "Lost LeBlanc / Kara & Nate",
+          "desc": "Tropical House, Future Bass, Inspiring Builds. The 'Drone Shot' music. High energy drops.",
+          "fingerprint": [80, 60, 50, 80, 30],
+          "genres": ["Tropical House", "Future Bass", "Pop"],
+          "songs": [
+            {
+              "title": "Firestone",
+              "artist": "Kygo",
+              "vibe": "Tropical, Plucks"
+            },
+            {
+              "title": "Fade",
+              "artist": "Alan Walker",
+              "vibe": "Electronic, Build"
+            },
+            {
+              "title": "High On Life",
+              "artist": "Martin Garrix",
+              "vibe": "Festival Energy"
+            },
+            {
+              "title": "Sunset Lover",
+              "artist": "Petit Biscuit",
+              "vibe": "Vocal Chops"
+            },
+            { "title": "Island", "artist": "Jarico", "vibe": "Bouncy, Bright" }
+          ]
+        }
+      ]
+    }
+  }
+}
