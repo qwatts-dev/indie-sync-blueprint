@@ -1,0 +1,37 @@
+{
+  "_meta": {
+    "version": "2.0.0",
+    "lastUpdated": "YYYY-MM-DD",
+    "source": "Gemini Deep Research",
+    "fingerprintAxes": [
+      "Energy",
+      "Emotion",
+      "Uniqueness",
+      "Catchiness",
+      "Lyrical Depth"
+    ],
+    "fingerprintScale": { "min": 0, "max": 100 }
+  },
+  "categories": {
+    "CATEGORY_KEY": {
+      "label": "Display Name for Tab",
+      "insight": "One paragraph summary of what defines this category for sync licensing.",
+      "brands": [
+        {
+          "name": "Brand Name",
+          "tag": "Industry / Sub-category",
+          "desc": "2-3 sentence description of the brand's sonic identity and what they look for in music.",
+          "fingerprint": [0, 0, 0, 0, 0],
+          "genres": ["Genre 1", "Genre 2", "Genre 3"],
+          "songs": [
+            {
+              "title": "Song Title",
+              "artist": "Artist Name",
+              "vibe": "2-4 word sonic descriptor"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
