@@ -116,6 +116,15 @@
         background: #6b7280;
       }
 
+      /* Hide Scrollbar for Horizontal Nav */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+      }
+
       .tab-active {
         border-bottom: 2px solid var(--accent-color);
         color: var(--primary-text);
@@ -156,6 +165,18 @@
         background-color: #f9fafb; /* gray-50 */
         transform: translateY(-1px);
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      
+      .no-tap-highlight {
+        -webkit-tap-highlight-color: transparent;
+        outline: none !important;
+        box-shadow: none !important;
+      }
+      .no-tap-highlight:focus,
+      .no-tap-highlight:focus-visible,
+      .no-tap-highlight:active {
+        outline: none !important;
+        box-shadow: none !important;
       }
 
       /* Ensure inner SVG is max 20x20 and centered */
@@ -243,6 +264,149 @@
         overflow: hidden; /* Contain the liquid effect */
       }
 
+      /* Mobile Navigation Bar */
+      .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(16, 33, 54, 0.85);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid var(--glass-border);
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+        z-index: 100;
+      }
+      
+      .light-mode .bottom-nav {
+        background: rgba(255, 255, 255, 0.85);
+      }
+
+      .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        color: var(--secondary-text);
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        min-width: 64px;
+        padding: 4px 12px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }
+      
+      .nav-item.active {
+        color: var(--accent-color);
+      }
+      
+      .nav-item svg {
+        width: 24px;
+        height: 24px;
+      }
+
+      /* Bottom Sheet (Brand Selector) */
+      .bottom-sheet-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 200;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+      
+      .bottom-sheet-overlay.open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .bottom-sheet {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: var(--bg-card);
+        border-radius: 24px 24px 0 0;
+        padding: 24px;
+        transform: translateY(100%);
+        transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        z-index: 201;
+        max-height: 80vh;
+        overflow-y: auto;
+        border-top: 1px solid var(--border-color);
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+        padding-bottom: calc(20px + env(safe-area-inset-bottom));
+      }
+
+      .bottom-sheet.open {
+        transform: translateY(0);
+      }
+
+      /* Horizontal Snap Carousel */
+      .snap-scroll-x {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 16px;
+        padding-bottom: 16px;
+        width: 100%;
+      }
+      
+      .snap-card {
+        flex: 0 0 85%;
+        scroll-snap-align: center;
+        background: var(--bg-card); /* Fallback */
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+      }
+
+      /* Collapsible Text */
+      .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      
+      .expanded {
+        -webkit-line-clamp: unset;
+      }
+
+      /* Adjust chart container for mobile */
+      @media (max-width: 768px) {
+        main {
+          padding-top: 80px !important;
+          padding-bottom: 0; /* Footer handles the spacing */
+        }
+        
+        .desktop-only {
+          display: none !important;
+        }
+
+        .chart-container-mobile {
+          height: 250px;
+        }
+      }
+
+      @media (min-width: 769px) {
+        .mobile-only {
+          display: none !important;
+        }
+      }
+
       /* Liquid Background Layer */
       .liquid-bg {
         position: absolute;
@@ -304,8 +468,8 @@
             </p>
         </div>
 
-        <!-- Navigation Links -->
-        <nav class="hidden md:flex items-center space-x-6">
+        <!-- Navigation Links (Desktop Only) -->
+        <nav class="hidden md:flex items-center space-x-6 desktop-only">
           <a
             href="#dashboard"
             class="text-xs font-bold uppercase tracking-wider text-[var(--primary-text)] hover:text-purple transition-colors"
@@ -358,42 +522,42 @@
         </p>
       </section>
 
-      <!-- Category Tabs -->
+      <!-- Category Tabs (Pill Filters) -->
       <div
-        class="flex flex-wrap border-b border-[var(--border-color)] mb-12 overflow-x-auto justify-center gap-2"
+        class="flex flex-nowrap border-b border-transparent mb-8 overflow-x-auto justify-start md:justify-center gap-3 px-4 -mx-4 md:px-0 md:mx-0 no-scrollbar pb-2 md:pb-0"
       >
         <button
           onclick="setCategory('Ads')"
           id="tab-Ads"
-          class="tab-active px-8 py-4 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-t-2xl"
+          class="no-tap-highlight px-6 py-2 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-full border border-purple bg-[var(--bg-card)]"
         >
           Commercials
         </button>
         <button
           onclick="setCategory('TV')"
           id="tab-TV"
-          class="tab-inactive px-8 py-4 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-t-2xl"
+          class="no-tap-highlight px-6 py-2 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-full border border-[var(--border-color)] bg-transparent"
         >
           TV & Movies
         </button>
         <button
           onclick="setCategory('Games')"
           id="tab-Games"
-          class="tab-inactive px-8 py-4 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-t-2xl"
+          class="no-tap-highlight px-6 py-2 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-full border border-[var(--border-color)] bg-transparent"
         >
           Video Games
         </button>
         <button
           onclick="setCategory('Trailers')"
           id="tab-Trailers"
-          class="tab-inactive px-8 py-4 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-t-2xl"
+          class="no-tap-highlight px-6 py-2 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-full border border-[var(--border-color)] bg-transparent"
         >
           Trailers
         </button>
         <button
           onclick="setCategory('Influencer')"
           id="tab-Influencer"
-          class="tab-inactive px-8 py-4 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-t-2xl"
+          class="no-tap-highlight px-6 py-2 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-full border border-[var(--border-color)] bg-transparent"
         >
           Influencers
         </button>
@@ -401,10 +565,10 @@
 
       <!-- Dashboard Grid -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8" id="dashboard">
-        <!-- Left Column: Brand Selector -->
-        <div class="lg:col-span-3 flex flex-col gap-6">
+        <!-- Left Column: Brand Selector (Sticky) -->
+        <div class="hidden lg:flex lg:col-span-3 flex-col gap-6 lg:sticky lg:top-24 h-fit">
           <div
-            class="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-color)]"
+            class="bg-[var(--glass-bg)] backdrop-blur-xl p-6 rounded-2xl border border-[var(--border-color)]"
           >
             <h3
               class="text-xs font-bold uppercase tracking-widest text-[var(--secondary-text)] mb-6"
@@ -431,31 +595,45 @@
         <div class="lg:col-span-5 flex flex-col gap-6">
           <!-- Header for Selected Brand -->
           <div
-            class="bg-[var(--bg-card)] p-8 rounded-2xl border border-[var(--border-color)] relative overflow-hidden"
+            class="bg-[var(--glass-bg)] backdrop-blur-xl p-8 rounded-2xl border border-[var(--border-color)] relative overflow-hidden"
           >
             <!-- Decorative gradient orb -->
             <div class="absolute -top-10 -right-10 w-40 h-40 bg-purple blur-[60px] opacity-20 pointer-events-none"></div>
 
             <div class="flex justify-between items-start mb-6 relative z-10">
-              <div>
-                <span
-                  id="brand-tag"
-                  class="text-[10px] font-bold uppercase tracking-widest text-purple bg-[rgba(116,86,241,0.1)] px-3 py-1 rounded-lg"
-                  >TECH / LIFESTYLE</span
-                >
+              <div class="w-full">
+                <!-- Mobile Brand Selector Trigger -->
+                <button onclick="toggleBottomSheet(true)" class="lg:hidden flex items-center gap-2 w-full text-left mb-2 group">
+                   <h2 id="brand-name-mobile" class="text-3xl font-extrabold text-[var(--primary-text)] tracking-tight">Apple</h2>
+                   <svg class="w-6 h-6 text-purple group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+
+                <!-- Desktop Title -->
                 <h2
                   id="brand-name"
-                  class="text-4xl font-extrabold text-[var(--primary-text)] mt-4 tracking-tight"
+                  class="hidden lg:block text-4xl font-extrabold text-[var(--primary-text)] mt-4 tracking-tight"
                 >
                   Apple
                 </h2>
+                
+                <span
+                  id="brand-tag"
+                  class="text-[10px] font-bold uppercase tracking-widest text-purple bg-[rgba(116,86,241,0.1)] px-3 py-1 rounded-lg inline-block mt-2 lg:mt-0"
+                  >TECH / LIFESTYLE</span
+                >
               </div>
             </div>
-            <p id="brand-desc" class="text-sm text-[var(--secondary-text)] mb-4 leading-relaxed font-medium">
-              Known for setting trends. Styles range from minimalist, catchy
-              indie-pop to high-energy electronic. Lyrics often focus on "New,"
-              "Go," "You," and "Color."
-            </p>
+            
+            <div class="relative group">
+                <p id="brand-desc" class="text-sm text-[var(--secondary-text)] mb-2 leading-relaxed font-medium line-clamp-2 lg:line-clamp-none transition-all">
+                  Known for setting trends. Styles range from minimalist, catchy
+                  indie-pop to high-energy electronic. Lyrics often focus on "New,"
+                  "Go," "You," and "Color."
+                </p>
+                <button id="read-more-btn" onclick="toggleDescription()" class="lg:hidden text-xs font-bold text-purple uppercase tracking-wider mb-4">
+                  Read more
+                </button>
+            </div>
 
             <!-- Reference Playlist -->
             <div class="border-b border-[var(--border-color)] pb-3 mt-8 mb-4">
@@ -464,10 +642,11 @@
               </h3>
             </div>
 
-            <!-- Scrollable Song List -->
+            <!-- Scrollable Song List (Horizontal on Mobile, Vertical on Desktop) -->
             <div
               id="song-list"
-              class="flex flex-col gap-3 max-h-[500px] overflow-y-auto custom-scroll pr-2"
+              class="flex flex-row lg:flex-col gap-4 lg:gap-3 overflow-x-auto lg:overflow-y-auto snap-x lg:snap-none pb-4 lg:pb-0 custom-scroll pr-2 snap-mandatory"
+              style="max-height: none;"
             >
               <!-- Populated by JS -->
             </div>
@@ -475,10 +654,10 @@
         </div>
 
         <!-- Right Column: Analytics -->
-        <div class="lg:col-span-4 flex flex-col gap-6">
+        <div id="analysis" class="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-24 h-fit">
           <!-- Sonic Fingerprint Chart -->
           <div
-            class="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-color)] flex flex-col"
+            class="bg-[var(--glass-bg)] backdrop-blur-xl p-6 rounded-2xl border border-[var(--border-color)] flex flex-col"
           >
             <h3 class="text-sm font-bold uppercase tracking-wide text-[var(--primary-text)] mb-1">
               Sonic Fingerprint
@@ -487,7 +666,7 @@
               Does your music match these levels?
             </p>
             <div class="flex-grow flex items-center justify-center">
-              <div class="chart-container">
+              <div class="chart-container chart-container-mobile">
                 <canvas id="radarChart"></canvas>
               </div>
             </div>
@@ -495,7 +674,7 @@
 
           <!-- Genre Distribution -->
           <div
-            class="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-color)]"
+            class="bg-[var(--glass-bg)] backdrop-blur-xl p-6 rounded-2xl border border-[var(--border-color)]"
           >
             <h3 class="text-sm font-bold uppercase tracking-wide text-[var(--primary-text)] mb-6">
               Key Genres for Brand
@@ -516,7 +695,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <!-- Step 1 -->
           <div
-            class="bg-[var(--bg-card)] p-8 rounded-2xl border border-[var(--border-color)] relative overflow-hidden group hover:border-purple transition-colors duration-300"
+            class="bg-[var(--glass-bg)] backdrop-blur-xl p-8 rounded-2xl border border-[var(--border-color)] relative overflow-hidden group hover:border-purple transition-colors duration-300"
           >
             <div class="absolute top-0 left-0 w-1 h-full bg-purple"></div>
             <h3 class="text-lg font-bold mb-4 pl-0 text-[var(--primary-text)] group-hover:text-purple transition-colors">
@@ -532,7 +711,7 @@
 
           <!-- Step 2 -->
           <div
-            class="bg-[var(--bg-card)] p-8 rounded-2xl border border-[var(--border-color)] relative overflow-hidden group hover:border-purple transition-colors duration-300"
+            class="bg-[var(--glass-bg)] backdrop-blur-xl p-8 rounded-2xl border border-[var(--border-color)] relative overflow-hidden group hover:border-purple transition-colors duration-300"
           >
             <div class="absolute top-0 left-0 w-1 h-full bg-[#8A8780]"></div>
             <h3 class="text-lg font-bold mb-4 pl-0 text-[var(--primary-text)] group-hover:text-purple transition-colors">
@@ -549,7 +728,7 @@
 
           <!-- Step 3 -->
           <div
-            class="bg-[var(--bg-card)] p-8 rounded-2xl border border-[var(--border-color)] relative overflow-hidden group hover:border-purple transition-colors duration-300"
+            class="bg-[var(--glass-bg)] backdrop-blur-xl p-8 rounded-2xl border border-[var(--border-color)] relative overflow-hidden group hover:border-purple transition-colors duration-300"
           >
             <div class="absolute top-0 left-0 w-1 h-full bg-[#ffffff]"></div>
             <h3 class="text-lg font-bold mb-4 pl-0 text-[var(--primary-text)] group-hover:text-purple transition-colors">
@@ -567,13 +746,57 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-[var(--bg-footer)] border-t border-[var(--border-color)] mt-20 py-12">
+    <footer class="bg-[var(--bg-footer)] border-t border-[var(--border-color)] mt-20 py-12 pb-24 md:pb-12">
       <div class="max-w-7xl mx-auto px-4 text-center text-[var(--secondary-text)] border-gray-600 text-sm">
         <p>
           &copy; 2026 Indie Artist Sync Guide. Built for <span class="text-purple">intentional research</span>.
         </p>
       </div>
     </footer>
+
+    <!-- Bottom Navigation Bar (Mobile) -->
+    <nav class="bottom-nav mobile-only">
+      <button class="nav-item active" onclick="scrollToSection('dashboard')">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+        </svg>
+        <span>DB</span>
+      </button>
+      <button class="nav-item" onclick="scrollToSection('analysis')">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" />
+        </svg>
+        <span>Analysis</span>
+      </button>
+      <button class="nav-item" onclick="scrollToSection('checklist')">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>Plan</span>
+      </button>
+    </nav>
+
+    <!-- Bottom Sheet Brand Selector -->
+    <div id="brand-sheet-overlay" class="bottom-sheet-overlay" onclick="toggleBottomSheet(false)"></div>
+    <div id="brand-sheet" class="bottom-sheet">
+      <div class="w-12 h-1 bg-[var(--border-color)] rounded-full mx-auto mb-6"></div>
+      <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-bold uppercase text-[var(--primary-text)]">Select a Brand</h3>
+          <button onclick="toggleBottomSheet(false)" class="p-2 text-[var(--secondary-text)]">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+      </div>
+      <!-- Search Input -->
+      <div class="relative mb-4">
+        <input type="text" id="brand-search" placeholder="Search brands..." class="w-full bg-[var(--bg-color)] text-[var(--primary-text)] border border-[var(--border-color)] rounded-xl py-3 px-10 text-sm focus:outline-none focus:border-purple transition-colors">
+        <svg class="w-5 h-5 text-[var(--secondary-text)] absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      </div>
+      
+      <div id="mobile-brand-list" class="flex flex-col gap-3 max-h-[60vh] overflow-y-auto">
+        <!-- JS Populated -->
+      </div>
+    </div>
 
     <!-- SVG Filters for Liquid Effect -->
     <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg">
@@ -1038,52 +1261,103 @@
       // --- INIT ---
       window.addEventListener("DOMContentLoaded", () => {
         setCategory("Ads");
+        
+        // Search Listener
+        document.getElementById('brand-search').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const buttons = document.querySelectorAll('#mobile-brand-list button');
+            buttons.forEach(btn => {
+                const text = btn.innerText.toLowerCase();
+                btn.style.display = text.includes(term) ? 'block' : 'none';
+            });
+        });
       });
 
       // --- FUNCTIONS ---
+
+      function toggleBottomSheet(show) {
+        const sheet = document.getElementById("brand-sheet");
+        const overlay = document.getElementById("brand-sheet-overlay");
+        if (show) {
+          sheet.classList.add("open");
+          overlay.classList.add("open");
+        } else {
+          sheet.classList.remove("open");
+          overlay.classList.remove("open");
+        }
+      }
+
+      function toggleDescription() {
+        const desc = document.getElementById("brand-desc");
+        const btn = document.getElementById("read-more-btn");
+        const isCollapsed = desc.classList.toggle("line-clamp-2");
+        btn.innerText = isCollapsed ? "Read More" : "Show Less";
+      }
+
+      function scrollToSection(id) {
+        document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        // Simple active state toggle
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+      }
 
       function setCategory(category) {
         currentCategory = category;
 
         // Update Tabs
-        // Update Tabs
         document.querySelectorAll('button[id^="tab-"]').forEach((btn) => {
           btn.className =
-            "tab-inactive px-8 py-4 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-t-2xl text-[var(--secondary-text)] border-b-2 border-transparent hover:text-[var(--primary-text)]";
+            "no-tap-highlight px-6 py-2 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-full border border-[var(--border-color)] bg-transparent text-[var(--secondary-text)] hover:text-[var(--primary-text)]";
         });
         document.getElementById(`tab-${category}`).className =
-          "tab-active px-8 py-4 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-t-2xl text-purple border-b-2 border-purple bg-[var(--bg-card)]";
+          "no-tap-highlight px-6 py-2 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-full border border-purple bg-[var(--bg-card)] text-purple";
 
         // Update Insight
         const catData = syncData[category];
         document.getElementById("category-insight").innerText = catData.insight;
 
-        // Populate Brands List
+        // Populate Desktop Brand List
         const brandList = document.getElementById("brand-list");
-        brandList.innerHTML = "";
+        populateBrandList(brandList, catData, category, false);
 
+        // Populate Mobile Brand List
+        const mobileList = document.getElementById("mobile-brand-list");
+        populateBrandList(mobileList, catData, category, true);
+
+        // Select first brand by default
+        selectBrand(category, 0, null);
+      }
+
+      function populateBrandList(container, catData, category, isMobile) {
+        container.innerHTML = "";
         catData.brands.forEach((brand, index) => {
           const btn = document.createElement("button");
-          btn.className = `text-left px-5 py-4 rounded-2xl text-sm font-bold transition-all w-full border ${
+          // Different styling for mobile vs desktop list? Keeping consistent for now
+          const baseClass = isMobile 
+            ? "text-left px-5 py-4 rounded-xl text-lg font-bold transition-all w-full border bg-[var(--bg-card)] border-[var(--border-color)] text-[var(--primary-text)]"
+            : `text-left px-5 py-4 rounded-2xl text-sm font-bold transition-all w-full border ${
             index === 0
-              ? "bg-purple text-white border-purple transform scale-[1.02]"
+              ? "bg-purple text-white border-purple"
               : "bg-[var(--bg-color)] text-[var(--secondary-text)] hover:bg-[var(--highlight-bg)] hover:text-[var(--primary-text)] border-[var(--border-color)]"
           }`;
+          
+          btn.className = baseClass;
+          // Add ID for selection targeting
+          btn.dataset.brandIndex = index;
+          
           btn.innerHTML = `
                     <div class="flex justify-between items-center">
                         <span class="tracking-wide uppercase">${brand.name}</span>
-                        ${index === 0 ? '<span class="text-[var(--primary-text)] text-lg">●</span>' : ""}
+                        ${!isMobile ? `<span class="brand-dot text-lg ${index === 0 ? '' : 'invisible'}">●</span>` : ''}
                     </div>
                 `;
           btn.onclick = () => {
-              currentBrandIndex = index; // Update State
+              currentBrandIndex = index;
               selectBrand(category, index, btn);
+              if (isMobile) toggleBottomSheet(false);
           };
-          brandList.appendChild(btn);
+          container.appendChild(btn);
         });
-
-        // Select first brand by default
-        selectBrand(category, 0, brandList.children[0]);
       }
 
       function generateSearchLinks(title, artist) {
@@ -1095,66 +1369,56 @@
       }
 
       function selectBrand(category, index, btnElement) {
-        // Visual update for list
-        // Visual update for list
+        // Visual update for list (Desktop)
         const list = document.getElementById("brand-list");
         Array.from(list.children).forEach((b) => {
-          b.className =
-            "text-left px-5 py-4 rounded-2xl text-sm font-bold transition-all w-full border bg-[var(--bg-color)] text-[var(--secondary-text)] hover:bg-[var(--highlight-bg)] hover:text-[var(--primary-text)] border-[var(--border-color)]";
-          b.innerHTML = b.innerHTML.replace(
-            '<span class="text-[var(--primary-text)] text-lg">●</span>',
-            "",
-          );
+            if(parseInt(b.dataset.brandIndex) === index) {
+                b.className = "text-left px-5 py-4 rounded-2xl text-sm font-bold transition-all w-full border bg-purple text-white border-purple";
+                const dot = b.querySelector('.brand-dot');
+                if (dot) dot.classList.remove('invisible');
+            } else {
+                b.className = "text-left px-5 py-4 rounded-2xl text-sm font-bold transition-all w-full border bg-[var(--bg-color)] text-[var(--secondary-text)] hover:bg-[var(--highlight-bg)] hover:text-[var(--primary-text)] border-[var(--border-color)]";
+                const dot = b.querySelector('.brand-dot');
+                if (dot) dot.classList.add('invisible');
+            }
         });
-        btnElement.className =
-          "text-left px-5 py-4 rounded-2xl text-sm font-bold transition-all w-full border bg-purple text-white border-purple transform scale-[1.02]";
-        btnElement.innerHTML = btnElement.innerHTML.replace(
-          "</div>",
-          '<span class="text-white text-lg">●</span></div>',
-        );
 
         const brandData = syncData[category].brands[index];
         currentBrand = brandData;
 
         // Update Content Info
         document.getElementById("brand-name").innerText = brandData.name;
+        document.getElementById("brand-name-mobile").innerText = brandData.name;
         document.getElementById("brand-tag").innerText = brandData.tag;
-        document.getElementById("brand-desc").innerText = brandData.desc;
+        const descEl = document.getElementById("brand-desc");
+        descEl.innerText = brandData.desc;
+        
+        // Reset read more
+        descEl.classList.add("line-clamp-2");
+        document.getElementById("read-more-btn").innerText = "Read More";
 
         // Update Song List
         const songList = document.getElementById("song-list");
         songList.innerHTML = "";
 
-        // Inline SVGs
+        // Inline SVGs (Same as before)
         const spotifyIcon = `<svg viewBox="0 0 24 24" fill="currentColor" class="text-[#1DB954]"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>`;
-
-        // The precise Apple SVG provided, wrapped to ensure sizing
-        // Removed ID to avoid collisions in loop, simplified defs
-        const appleIcon = `
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 361 361">
-                <defs>
-                    <linearGradient id="appleGradient" gradientUnits="userSpaceOnUse" x1="180" y1="358.6047" x2="180" y2="7.7586">
-                        <stop offset="0" style="stop-color:#FA233B"/>
-                        <stop offset="1" style="stop-color:#FB5C74"/>
-                    </linearGradient>
-                </defs>
-                <path style="fill:url(#appleGradient)" d="M360,112.61c0-4.3,0-8.6-0.02-12.9c-0.02-3.62-0.06-7.24-0.16-10.86c-0.21-7.89-0.68-15.84-2.08-23.64c-1.42-7.92-3.75-15.29-7.41-22.49c-3.6-7.07-8.3-13.53-13.91-19.14c-5.61-5.61-12.08-10.31-19.15-13.91c-7.19-3.66-14.56-5.98-22.47-7.41c-7.8-1.4-15.76-1.87-23.65-2.08c-3.62-0.1-7.24-0.14-10.86-0.16C255.99,0,251.69,0,247.39,0H112.61c-4.3,0-8.6,0-12.9,0.02c-3.62,0.02-7.24,0.06-10.86,0.16C80.96,0.4,73,0.86,65.2,2.27c-7.92,1.42-15.28,3.75-22.47,7.41c-7.07,3.6-13.54,8.3-19.15,13.91c-5.61,5.61-10.31,12.07-13.91,19.14c-3.66,7.2-5.99,14.57-7.41,22.49c-1.4,7.8-1.87,15.76-2.08,23.64c-0.1,3.62-0.14,7.24-0.16,10.86C0,104.01,0,108.31,0,112.61v134.77c0,4.3,0,8.6,0.02,12.9c0.02,3.62,0.06,7.24,0.16,10.86c0.21,7.89,0.68,15.84,2.08,23.64c1.42,7.92,3.75,15.29,7.41,22.49c3.6,7.07,8.3,13.53,13.91,19.14c5.61,5.61,12.08,10.31,19.15,13.91c7.19,3.66,14.56,5.98,22.47,7.41c7.8,1.4,15.76,1.87,23.65,2.08c3.62,0.1,7.24,0.14,10.86,0.16c4.3,0.03,8.6,0.02,12.9,0.02h134.77c4.3,0,8.6,0,12.9-0.02c3.62-0.02,7.24-0.06,10.86-0.16c7.89-0.21,15.85-0.68,23.65-2.08c7.92-1.42,15.28-3.75,22.47-7.41c7.07-3.6,13.54-8.3,19.15-13.91c5.61-5.61,10.31-12.07,13.91-19.14c3.66-7.2,5.99-14.57,7.41-22.49c1.4-7.8,1.87-15.76,2.08-23.64c0.1-3.62,0.14-7.24,0.16-10.86c0.03-4.3,0.02-8.6,0.02-12.9V112.61z"/>
-                <path fill="#FFFFFF" d="M254.5,55c-0.87,0.08-8.6,1.45-9.53,1.64l-107,21.59l-0.04,0.01c-2.79,0.59-4.98,1.58-6.67,3c-2.04,1.71-3.17,4.13-3.6,6.95c-0.09,0.6-0.24,1.82-0.24,3.62c0,0,0,109.32,0,133.92c0,3.13-0.25,6.17-2.37,8.76c-2.12,2.59-4.74,3.37-7.81,3.99c-2.33,0.47-4.66,0.94-6.99,1.41c-8.84,1.78-14.59,2.99-19.8,5.01c-4.98,1.93-8.71,4.39-11.68,7.51c-5.89,6.17-8.28,14.54-7.46,22.38c0.7,6.69,3.71,13.09,8.88,17.82c3.49,3.2,7.85,5.63,12.99,6.66c5.33,1.07,11.01,0.7,19.31-0.98c4.42-0.89,8.56-2.28,12.5-4.61c3.9-2.3,7.24-5.37,9.85-9.11c2.62-3.75,4.31-7.92,5.24-12.35c0.96-4.57,1.19-8.7,1.19-13.26l0-116.15c0-6.22,1.76-7.86,6.78-9.08c0,0,88.94-17.94,93.09-18.75c5.79-1.11,8.52,0.54,8.52,6.61l0,79.29c0,3.14-0.03,6.32-2.17,8.92c-2.12,2.59-4.74,3.37-7.81,3.99c-2.33,0.47-4.66,0.94-6.99,1.41c-8.84,1.78-14.59,2.99-19.8,5.01c-4.98,1.93-8.71,4.39-11.68,7.51c-5.89,6.17-8.49,14.54-7.67,22.38c0.7,6.69,3.92,13.09,9.09,17.82c3.49,3.2,7.85,5.56,12.99,6.6c5.33,1.07,11.01,0.69,19.31-0.98c4.42-0.89,8.56-2.22,12.5-4.55c3.9-2.3,7.24-5.37,9.85-9.11c2.62-3.75,4.31-7.92,5.24-12.35c0.96-4.57,1-8.7,1-13.26V64.46C263.54,58.3,260.29,54.5,254.5,55z"/>
-            </svg>`;
+        const appleIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 361 361"><path fill="#FA233B" d="M180,361C80.6,361,0,280.4,0,181C0,81.6,80.6,1,180,1c99.4,0,180,80.6,180,180C360,280.4,279.4,361,180,361z"/><path fill="#FFFFFF" d="M254.5,55c-0.87,0.08-8.6,1.45-9.53,1.64l-107,21.59l-0.04,0.01c-2.79,0.59-4.98,1.58-6.67,3c-2.04,1.71-3.17,4.13-3.6,6.95c-0.09,0.6-0.24,1.82-0.24,3.62c0,0,0,109.32,0,133.92c0,3.13-0.25,6.17-2.37,8.76c-2.12,2.59-4.74,3.37-7.81,3.99c-2.33,0.47-4.66,0.94-6.99,1.41c-8.84,1.78-14.59,2.99-19.8,5.01c-4.98,1.93-8.71,4.39-11.68,7.51c-5.89,6.17-8.28,14.54-7.46,22.38c0.7,6.69,3.71,13.09,8.88,17.82c3.49,3.2,7.85,5.63,12.99,6.66c5.33,1.07,11.01,0.7,19.31-0.98c4.42-0.89,8.56-2.28,12.5-4.61c3.9-2.3,7.24-5.37,9.85-9.11c2.62-3.75,4.31-7.92,5.24-12.35c0.96-4.57,1.19-8.7,1.19-13.26l0-116.15c0-6.22,1.76-7.86,6.78-9.08c0,0,88.94-17.94,93.09-18.75c5.79-1.11,8.52,0.54,8.52,6.61l0,79.29c0,3.14-0.03,6.32-2.17,8.92c-2.12,2.59-4.74,3.37-7.81,3.99c-2.33,0.47-4.66,0.94-6.99,1.41c-8.84,1.78-14.59,2.99-19.8,5.01c-4.98,1.93-8.71,4.39-11.68,7.51c-5.89,6.17-8.49,14.54-7.67,22.38c0.7,6.69,3.92,13.09,9.09,17.82c3.49,3.2,7.85,5.56,12.99,6.6c5.33,1.07,11.01,0.69,19.31-0.98c4.42-0.89,8.56-2.22,12.5-4.55c3.9-2.3,7.24-5.37,9.85-9.11c2.62-3.75,4.31-7.92,5.24-12.35c0.96-4.57,1-8.7,1-13.26V64.46C263.54,58.3,260.29,54.5,254.5,55z"/></svg>`;
 
         brandData.songs.forEach((song, i) => {
           const links = generateSearchLinks(song.title, song.artist);
            const row = document.createElement("div");
+          // UPDATED: Card style for horizontal scroll
           row.className =
-            "song-item flex items-start gap-5 p-5 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-color)] hover:border-purple transition-all group";
+            "song-item flex-none w-[85%] lg:w-full snap-center lg:snap-align-none flex items-start gap-4 p-5 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-card)] lg:bg-[var(--bg-color)] hover:border-purple transition-all group shadow-sm";
 
           row.innerHTML = `
                     <div class="text-[var(--secondary-text)] font-bold text-sm pt-1 group-hover:text-purple transition-colors">0${i + 1}</div>
-                    <div class="flex-grow flex flex-col gap-3">
+                    <div class="flex-grow flex flex-col gap-2">
                         <!-- Top Row: Song Info -->
                         <div class="flex flex-col">
-                            <div class="text-lg font-bold text-[var(--primary-text)] leading-tight">${song.title}</div>
-                            <div class="text-sm text-[var(--secondary-text)] mt-1">${song.artist}</div>
+                            <div class="text-lg font-bold text-[var(--primary-text)] leading-tight line-clamp-1">${song.title}</div>
+                            <div class="text-sm text-[var(--secondary-text)] mt-1 line-clamp-1">${song.artist}</div>
                         </div>
 
                         <!-- Vibe Badge (Context) -->
@@ -1163,15 +1427,18 @@
                         </div>
                         
                         <!-- Bottom Row: Buttons (New Line) -->
-                        <div class="flex items-center gap-3 mt-2 pt-3 border-t border-[var(--border-color)] group-hover:border-[rgba(116,86,241,0.3)] transition-colors">
-                            <a href="${links.spotify}" target="_blank" rel="noopener noreferrer" 
-                               class="btn-platform" title="Open in Spotify">
-                               ${spotifyIcon}
-                            </a>
-                            <a href="${links.apple}" target="_blank" rel="noopener noreferrer" 
-                               class="btn-platform" title="Open in Apple Music">
-                               ${appleIcon}
-                            </a>
+                        <div class="flex items-center gap-3 mt-1 pt-3 border-t border-[var(--border-color)] group-hover:border-[rgba(116,86,241,0.3)] transition-colors w-full justify-between">
+                            <span class="text-[10px] text-[var(--secondary-text)] uppercase font-bold">Listen On</span>
+                            <div class="flex gap-2">
+                              <a href="${links.spotify}" target="_blank" rel="noopener noreferrer" 
+                                 class="btn-platform" title="Open in Spotify">
+                                 ${spotifyIcon}
+                              </a>
+                              <a href="${links.apple}" target="_blank" rel="noopener noreferrer" 
+                                 class="btn-platform" title="Open in Apple Music">
+                                 ${appleIcon}
+                              </a>
+                            </div>
                         </div>
                     </div>
                 `;
