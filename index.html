@@ -5,27 +5,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The Indie Sync Blueprint | Market Research Tool</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              navy: {
+                DEFAULT: "#102136",
+                light: "#1a2c42",
+              },
+              purple: {
+                DEFAULT: "#7456F1",
+                hover: "#5e45c4",
+              },
+              "blue-grey": "#4D5D6D",
+              "off-white": "#F9FAFB",
+            },
+            fontFamily: {
+              sans: ["Figtree", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "4px",
+            },
+          },
+        },
+      };
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <style>
-      /* Chosen Palette: Warm Neutrals & Earthy Tones */
+      /* 338studios Palette: Navy, Vibrant Purple, Tech Feel */
       :root {
-        --bg-color: #fdfcf8; /* Warm Off-White */
-        --primary-text: #2d2a26; /* Soft Black */
-        --secondary-text: #5d5a56; /* Warm Grey */
-        --accent-color: #c07f5e; /* Terracotta/Clay */
-        --accent-hover: #a56b4d;
-        --highlight-bg: #efebe5; /* Beige */
-        --border-color: #e0dcd5;
+        /* Default Dark Mode Variables */
+        --bg-color: #102136; /* Navy */
+        --bg-card: #1a2c42; /* Lighter Navy/Highlight */
+        --bg-footer: #0b1624; /* Darker Navy */
+        
+        --primary-text: #ffffff; /* White */
+        --secondary-text: #9ca3af; /* Light Grey (Tailwind gray-400) */
+        --muted-text: #6b7280; /* Gray-500 */
+        
+        --accent-color: #7456F1; /* Vibrant Purple */
+        --accent-hover: #5e45c4;
+        
+        --border-color: #2d3b4e;
+        --highlight-bg: #1a2c42;
+
+        /* Glassmorphism Variables */
+        --glass-bg: rgba(16, 33, 54, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+      }
+
+      /* Light Mode Overrides */
+      .light-mode {
+        --bg-color: #F9FAFB; /* Gray-50 */
+        --bg-card: #FFFFFF; /* White */
+        --bg-footer: #F3F4F6; /* Gray-100 */
+        
+        --primary-text: #111827; /* Gray-900 (Almost Black) */
+        --secondary-text: #4B5563; /* Gray-600 */
+        --muted-text: #9CA3AF; /* Gray-400 */
+        
+        --border-color: #E5E7EB; /* Gray-200 */
+        --highlight-bg: #FFFFFF;
+
+        /* Glassmorphism Light Mode */
+        --glass-bg: rgba(255, 255, 255, 0.75);
+        --glass-border: rgba(255, 255, 255, 0.5);
+        --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
       }
 
       body {
         background-color: var(--bg-color);
         color: var(--primary-text);
-        font-family: "Inter", sans-serif;
+        font-family: "Figtree", sans-serif;
+        transition: background-color 0.3s ease, color 0.3s ease;
       }
 
       /* Chart Container Strategy */
@@ -43,19 +101,19 @@
         }
       }
 
-      /* Custom Scrollbar for lists */
+      /* Custom Scrollbar for lists - Dark Theme */
       .custom-scroll::-webkit-scrollbar {
         width: 6px;
       }
       .custom-scroll::-webkit-scrollbar-track {
-        background: #f1f1f1;
+        background: var(--highlight-bg);
       }
       .custom-scroll::-webkit-scrollbar-thumb {
-        background: #d1d1d1;
+        background: #4b5563;
         border-radius: 3px;
       }
       .custom-scroll::-webkit-scrollbar-thumb:hover {
-        background: #b0b0b0;
+        background: #6b7280;
       }
 
       .tab-active {
@@ -106,6 +164,109 @@
         height: 20px;
         object-fit: contain;
       }
+      /* Toggle Switch */
+      /* Toggle Switch */
+      /* Hide the default checkbox */
+      .toggle-checkbox {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      
+      .toggle-label {
+        width: 44px;
+        height: 24px;
+        position: relative;
+        display: block;
+        background: var(--bg-card);
+        border-radius: 9999px;
+        cursor: pointer;
+        transition: background-color 0.2s ease-in;
+        border: 1px solid var(--border-color);
+      }
+      
+      .toggle-label:before {
+        content: '';
+        position: absolute;
+        top: 1px;
+        left: 1px;
+        width: 20px;
+        height: 20px;
+        background: #fff;
+        border-radius: 50%;
+        transition: transform 0.2s ease-in;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      }
+
+      .toggle-checkbox:checked + .toggle-label {
+        background-color: #7456F1;
+        border-color: #7456F1;
+      }
+      
+      .toggle-checkbox:checked + .toggle-label:before {
+        transform: translateX(20px); /* 44px (width) - 2px (borders) - 2px (padding) - 20px (circle) = 20px travel */
+      }
+      
+      /* Theme-based Logo Visibility */
+      /* Default (Dark Mode) - Show Light Logo (White text usually) */
+      .logo-light { display: block; }
+      .logo-dark { display: none; }
+
+      /* Light Mode - Show Dark Logo */
+      .light-mode .logo-light { display: none; }
+      .light-mode .logo-dark { display: block; }
+
+
+
+      /* Liquid Glass Navbar */
+      .nav-pill {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 1.5rem;
+        width: 90%;
+        max-width: 1000px;
+        
+        background: rgba(255, 255, 255, 0.1); /* Fallback / lighter base */
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--glass-border);
+        border-radius: 9999px;
+        box-shadow: var(--glass-shadow);
+        transition: background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden; /* Contain the liquid effect */
+      }
+
+      /* Liquid Background Layer */
+      .liquid-bg {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle at center, rgba(116, 86, 241, 0.15), transparent 60%);
+        opacity: 0.6;
+        z-index: -1;
+        filter: url(#liquid-flow);
+        animation: liquidMove 20s infinite linear;
+        pointer-events: none;
+      }
+      
+      @keyframes liquidMove {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      /* Adjust main content ensuring it isn't hidden behind fixed nav */
+      main {
+        padding-top: 120px !important;
+      }
     </style>
     <!-- Application Structure Plan:
          1. Header: Context "Intentional Research".
@@ -125,102 +286,116 @@
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
   </head>
   <body class="antialiased min-h-screen flex flex-col">
-    <!-- Header Section -->
-    <header
-      class="w-full border-b border-[#E0DCD5] bg-[#FDFCF8] sticky top-0 z-10 shadow-sm"
-    >
-      <div
-        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between"
-      >
-        <div class="flex items-center gap-3">
-          <div
-            class="w-10 h-10 bg-[#C07F5E] rounded-full flex items-center justify-center text-white font-bold text-xl"
-          >
-            S
-          </div>
-          <div>
-            <h1 class="text-xl font-bold tracking-tight text-[#2D2A26]">
-              The Indie Sync Blueprint
-            </h1>
-            <p class="text-xs text-[#5D5A56]">
-              Market Research & Reference Dashboard
+    <!-- Header Section (Floating Glass Pill) -->
+    <header class="w-full pointer-events-none sticky top-0 z-50">
+      <!-- The Pill Container -->
+      <div class="nav-pill pointer-events-auto">
+        <!-- Liquid Background Element -->
+        <div class="liquid-bg"></div>
+        
+        <!-- Logo Area -->
+        <div class="flex flex-col items-start justify-center">
+            <div class="h-6 overflow-hidden flex items-center">
+              <img src="images/338-sync-long-light.svg" alt="Indie Sync" class="logo-light h-full w-auto object-contain">
+              <img src="images/338-sync-long-dark.svg" alt="Indie Sync" class="logo-dark h-full w-auto object-contain">
+            </div>
+            <p class="text-[9px] text-[var(--secondary-text)] tracking-[0.1em] uppercase leading-tight mt-0.5 ml-0.5 font-medium">
+              Market Research
             </p>
-          </div>
         </div>
-        <nav class="hidden md:flex space-x-8">
+
+        <!-- Navigation Links -->
+        <nav class="hidden md:flex items-center space-x-6">
           <a
             href="#dashboard"
-            class="text-sm font-medium text-[#2D2A26] hover:text-[#C07F5E]"
+            class="text-xs font-bold uppercase tracking-wider text-[var(--primary-text)] hover:text-purple transition-colors"
             >Dashboard</a
           >
           <a
             href="#analysis"
-            class="text-sm font-medium text-[#5D5A56] hover:text-[#C07F5E]"
-            >Sonic Analysis</a
+            class="text-xs font-bold uppercase tracking-wider text-[var(--secondary-text)] hover:text-purple transition-colors"
+            >Analysis</a
           >
           <a
             href="#checklist"
-            class="text-sm font-medium text-[#5D5A56] hover:text-[#C07F5E]"
-            >Process Checklist</a
+            class="text-xs font-bold uppercase tracking-wider text-[var(--secondary-text)] hover:text-purple transition-colors"
+            >Checklist</a
           >
         </nav>
+
+        <!-- Use Flex Grow/Spacer if needed, but space-between handles it -->
+
+        <!-- Right Side: Toggle -->
+        <div class="flex items-center">
+            <div class="relative inline-block align-middle select-none">
+              <input type="checkbox" name="toggle" id="theme-toggle" class="toggle-checkbox" onclick="toggleTheme()"/>
+              <label for="theme-toggle" class="toggle-label"></label>
+            </div>
+            <!-- Optional Label
+            <label for="theme-toggle" class="text-[10px] font-bold uppercase tracking-wider text-[var(--secondary-text)] cursor-pointer">
+              <span class="hidden light-mode-text">Dark</span>
+              <span class="dark-mode-text">Light</span>
+            </label> 
+            -->
+        </div>
+
       </div>
     </header>
 
     <!-- Main Content -->
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
       <!-- Intro Context -->
-      <section class="mb-10 max-w-3xl">
-        <h2 class="text-2xl font-bold mb-3 text-[#2D2A26]">
-          Define Your Direction
+      <section class="mb-14 max-w-4xl mx-auto text-center">
+        <h2 class="text-4xl font-extrabold mb-4 text-[var(--primary-text)] uppercase tracking-tight">
+          Define Your <span class="text-purple">Sonic Vision</span>
         </h2>
-        <p class="text-[#5D5A56] leading-relaxed">
+        <p class="text-[var(--secondary-text)] leading-relaxed text-lg max-w-2xl mx-auto">
           As per your course notes, creativity starts with imitation and
           intentional research. Use this dashboard to
-          <strong>study the market</strong>. Select a category below to explore
+          <strong class="text-[var(--primary-text)]">study the market</strong>. Select a category below to explore
           top brands, analyze their "Sonic Identity," and listen to the
-          reference tracks directly on Spotify or Apple Music.
+          reference tracks directly.
         </p>
       </section>
 
       <!-- Category Tabs -->
       <div
-        class="flex flex-wrap border-b border-[#E0DCD5] mb-8 overflow-x-auto"
+        class="flex flex-wrap border-b border-[var(--border-color)] mb-12 overflow-x-auto justify-center gap-2"
       >
         <button
           onclick="setCategory('Ads')"
           id="tab-Ads"
-          class="tab-active px-6 py-3 text-sm focus:outline-none transition-colors whitespace-nowrap"
+          class="tab-active px-8 py-4 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-t-2xl"
         >
-          Commercials & Ads
+          Commercials
         </button>
         <button
           onclick="setCategory('TV')"
           id="tab-TV"
-          class="tab-inactive px-6 py-3 text-sm focus:outline-none transition-colors whitespace-nowrap"
+          class="tab-inactive px-8 py-4 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-t-2xl"
         >
           TV & Movies
         </button>
         <button
           onclick="setCategory('Games')"
           id="tab-Games"
-          class="tab-inactive px-6 py-3 text-sm focus:outline-none transition-colors whitespace-nowrap"
+          class="tab-inactive px-8 py-4 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-t-2xl"
         >
           Video Games
         </button>
         <button
           onclick="setCategory('Trailers')"
           id="tab-Trailers"
-          class="tab-inactive px-6 py-3 text-sm focus:outline-none transition-colors whitespace-nowrap"
+          class="tab-inactive px-8 py-4 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-t-2xl"
         >
-          Trailers & Promos
+          Trailers
         </button>
         <button
           onclick="setCategory('Influencer')"
           id="tab-Influencer"
-          class="tab-inactive px-6 py-3 text-sm focus:outline-none transition-colors whitespace-nowrap"
+          class="tab-inactive px-8 py-4 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-t-2xl"
         >
-          Influencer Content
+          Influencers
         </button>
       </div>
 
@@ -229,24 +404,24 @@
         <!-- Left Column: Brand Selector -->
         <div class="lg:col-span-3 flex flex-col gap-6">
           <div
-            class="bg-white p-6 rounded-xl border border-[#E0DCD5] shadow-sm"
+            class="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-color)]"
           >
             <h3
-              class="text-sm font-semibold uppercase tracking-wider text-[#5D5A56] mb-4"
+              class="text-xs font-bold uppercase tracking-widest text-[var(--secondary-text)] mb-6"
             >
               Select a Brand
             </h3>
-            <div id="brand-list" class="flex flex-col gap-2">
+            <div id="brand-list" class="flex flex-col gap-3">
               <!-- Populated by JS -->
             </div>
           </div>
 
           <!-- Quick Stats Box -->
-          <div class="bg-[#F6F4F0] p-6 rounded-xl">
-            <h3 class="text-sm font-semibold text-[#2D2A26] mb-2">
+          <div class="bg-gradient-to-br from-purple to-[#5e45c4] p-6 rounded-2xl text-white">
+            <h3 class="text-sm font-bold uppercase tracking-wide mb-3 opacity-90">
               Category Insight
             </h3>
-            <p id="category-insight" class="text-sm text-[#5D5A56] italic">
+            <p id="category-insight" class="text-sm font-medium leading-relaxed">
               Select a category to see insights.
             </p>
           </div>
@@ -256,33 +431,35 @@
         <div class="lg:col-span-5 flex flex-col gap-6">
           <!-- Header for Selected Brand -->
           <div
-            class="bg-white p-6 rounded-xl border border-[#E0DCD5] shadow-sm"
+            class="bg-[var(--bg-card)] p-8 rounded-2xl border border-[var(--border-color)] relative overflow-hidden"
           >
-            <div class="flex justify-between items-start mb-4">
+            <!-- Decorative gradient orb -->
+            <div class="absolute -top-10 -right-10 w-40 h-40 bg-purple blur-[60px] opacity-20 pointer-events-none"></div>
+
+            <div class="flex justify-between items-start mb-6 relative z-10">
               <div>
                 <span
                   id="brand-tag"
-                  class="text-xs font-bold text-[#C07F5E] bg-[#FDF0E6] px-2 py-1 rounded"
+                  class="text-[10px] font-bold uppercase tracking-widest text-purple bg-[rgba(116,86,241,0.1)] px-3 py-1 rounded-lg"
                   >TECH / LIFESTYLE</span
                 >
                 <h2
                   id="brand-name"
-                  class="text-2xl font-bold text-[#2D2A26] mt-2"
+                  class="text-4xl font-extrabold text-[var(--primary-text)] mt-4 tracking-tight"
                 >
                   Apple
                 </h2>
               </div>
-              <div class="text-2xl text-[#C07F5E]">●</div>
             </div>
-            <p id="brand-desc" class="text-sm text-[#5D5A56] mb-4">
+            <p id="brand-desc" class="text-sm text-[var(--secondary-text)] mb-4 leading-relaxed font-medium">
               Known for setting trends. Styles range from minimalist, catchy
               indie-pop to high-energy electronic. Lyrics often focus on "New,"
               "Go," "You," and "Color."
             </p>
 
             <!-- Reference Playlist -->
-            <div class="border-b border-[#E0DCD5] pb-2 mt-6 mb-3">
-              <h3 class="text-sm font-bold text-[#2D2A26]">
+            <div class="border-b border-[var(--border-color)] pb-3 mt-8 mb-4">
+              <h3 class="text-xs font-bold uppercase tracking-widest text-[var(--secondary-text)]">
                 Reference Playlist
               </h3>
             </div>
@@ -301,12 +478,12 @@
         <div class="lg:col-span-4 flex flex-col gap-6">
           <!-- Sonic Fingerprint Chart -->
           <div
-            class="bg-white p-6 rounded-xl border border-[#E0DCD5] shadow-sm flex flex-col"
+            class="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-color)] flex flex-col"
           >
-            <h3 class="text-sm font-bold text-[#2D2A26] mb-1">
+            <h3 class="text-sm font-bold uppercase tracking-wide text-[var(--primary-text)] mb-1">
               Sonic Fingerprint
             </h3>
-            <p class="text-xs text-[#5D5A56] mb-4">
+            <p class="text-xs text-[var(--secondary-text)] mb-6">
               Does your music match these levels?
             </p>
             <div class="flex-grow flex items-center justify-center">
@@ -318,9 +495,9 @@
 
           <!-- Genre Distribution -->
           <div
-            class="bg-white p-6 rounded-xl border border-[#E0DCD5] shadow-sm"
+            class="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-color)]"
           >
-            <h3 class="text-sm font-bold text-[#2D2A26] mb-4">
+            <h3 class="text-sm font-bold uppercase tracking-wide text-[var(--primary-text)] mb-6">
               Key Genres for Brand
             </h3>
             <div class="chart-container" style="height: 200px">
@@ -328,56 +505,57 @@
             </div>
           </div>
         </div>
+        </div>
       </div>
 
       <!-- Educational Checklist Section -->
-      <section id="checklist" class="mt-16 border-t border-[#E0DCD5] pt-10">
-        <h2 class="text-2xl font-bold mb-6 text-[#2D2A26]">
-          Your Action Plan (From Notes)
+      <section id="checklist" class="mt-20 border-t border-[var(--border-color)] pt-12">
+        <h2 class="text-3xl font-extrabold mb-8 text-[var(--primary-text)] uppercase tracking-tight text-center">
+          Your Action Plan
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <!-- Step 1 -->
           <div
-            class="bg-white p-6 rounded-xl border border-[#E0DCD5] shadow-sm relative overflow-hidden"
+            class="bg-[var(--bg-card)] p-8 rounded-2xl border border-[var(--border-color)] relative overflow-hidden group hover:border-purple transition-colors duration-300"
           >
-            <div class="absolute top-0 left-0 w-2 h-full bg-[#C07F5E]"></div>
-            <h3 class="text-lg font-bold mb-2 pl-2">
+            <div class="absolute top-0 left-0 w-1 h-full bg-purple"></div>
+            <h3 class="text-lg font-bold mb-4 pl-0 text-[var(--primary-text)] group-hover:text-purple transition-colors">
               Step 1: Intentional Research
             </h3>
-            <ul class="text-sm text-[#5D5A56] space-y-2 list-disc list-inside">
+            <ul class="text-sm text-[var(--secondary-text)] space-y-3 list-disc list-inside leading-relaxed">
               <li>Study the market (use the dashboard above).</li>
               <li>Listen to successful artists with placements.</li>
-              <li><strong>Imitate</strong> early on to learn the rules.</li>
+              <li><strong class="text-[var(--primary-text)]">Imitate</strong> early on to learn the rules.</li>
               <li>Avoid guessing; analyze specific brands.</li>
             </ul>
           </div>
 
           <!-- Step 2 -->
           <div
-            class="bg-white p-6 rounded-xl border border-[#E0DCD5] shadow-sm relative overflow-hidden"
+            class="bg-[var(--bg-card)] p-8 rounded-2xl border border-[var(--border-color)] relative overflow-hidden group hover:border-purple transition-colors duration-300"
           >
-            <div class="absolute top-0 left-0 w-2 h-full bg-[#8A8780]"></div>
-            <h3 class="text-lg font-bold mb-2 pl-2">
+            <div class="absolute top-0 left-0 w-1 h-full bg-[#8A8780]"></div>
+            <h3 class="text-lg font-bold mb-4 pl-0 text-[var(--primary-text)] group-hover:text-purple transition-colors">
               Step 2: Create Reference Playlist
             </h3>
-            <ul class="text-sm text-[#5D5A56] space-y-2 list-disc list-inside">
+            <ul class="text-sm text-[var(--secondary-text)] space-y-3 list-disc list-inside leading-relaxed">
               <li>Use TuneFind (TV/Games).</li>
               <li>Use iSpot.tv (Ads).</li>
               <li>Search YouTube for "Ad Playlists".</li>
               <li>Check Licensing Company sites.</li>
-              <li><strong>Goal:</strong> Find where your sound fits.</li>
+              <li><strong class="text-[var(--primary-text)]">Goal:</strong> Find where your sound fits.</li>
             </ul>
           </div>
 
           <!-- Step 3 -->
           <div
-            class="bg-white p-6 rounded-xl border border-[#E0DCD5] shadow-sm relative overflow-hidden"
+            class="bg-[var(--bg-card)] p-8 rounded-2xl border border-[var(--border-color)] relative overflow-hidden group hover:border-purple transition-colors duration-300"
           >
-            <div class="absolute top-0 left-0 w-2 h-full bg-[#2D2A26]"></div>
-            <h3 class="text-lg font-bold mb-2 pl-2">
+            <div class="absolute top-0 left-0 w-1 h-full bg-[#ffffff]"></div>
+            <h3 class="text-lg font-bold mb-4 pl-0 text-[var(--primary-text)] group-hover:text-purple transition-colors">
               Step 3: Determine Your Fit
             </h3>
-            <ul class="text-sm text-[#5D5A56] space-y-2 list-disc list-inside">
+            <ul class="text-sm text-[var(--secondary-text)] space-y-3 list-disc list-inside leading-relaxed">
               <li>Can you pivot to a new sound?</li>
               <li>Are you fitting Trailers or Influencers?</li>
               <li>Don't be afraid to explore new sounds.</li>
@@ -389,15 +567,39 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-[#F6F4F0] border-t border-[#E0DCD5] mt-12 py-8">
-      <div class="max-w-7xl mx-auto px-4 text-center text-[#5D5A56] text-sm">
+    <footer class="bg-[var(--bg-footer)] border-t border-[var(--border-color)] mt-20 py-12">
+      <div class="max-w-7xl mx-auto px-4 text-center text-[var(--secondary-text)] border-gray-600 text-sm">
         <p>
-          &copy; 2023 Indie Artist Sync Guide. Built for intentional research.
+          &copy; 2026 Indie Artist Sync Guide. Built for <span class="text-purple">intentional research</span>.
         </p>
       </div>
     </footer>
 
+    <!-- SVG Filters for Liquid Effect -->
+    <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="liquid-flow" x="-20%" y="-20%" width="140%" height="140%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.005" numOctaves="3" result="turbulence">
+            <animate attributeName="baseFrequency" dur="30s" values="0.005;0.01;0.005" repeatCount="indefinite" />
+          </feTurbulence>
+          <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="35" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </defs>
+    </svg>
+
     <script>
+      // State Tracking (Moved to State Management section below)
+
+      function toggleTheme() {
+        document.body.classList.toggle("light-mode");
+        const isLight = document.body.classList.contains("light-mode");
+        
+        // Update Toggle Text if needed (optional)
+        // Re-render charts to apply new theme colors
+        const brandData = syncData[currentCategory].brands[currentBrandIndex];
+        updateCharts(brandData);
+      }
+
       // --- DATA STORE ---
       const syncData = {
         Ads: {
@@ -828,6 +1030,7 @@
 
       // --- STATE MANAGEMENT ---
       let currentCategory = "Ads";
+      let currentBrandIndex = 0;
       let currentBrand = null;
       let radarChartInstance = null;
       let barChartInstance = null;
@@ -843,12 +1046,13 @@
         currentCategory = category;
 
         // Update Tabs
+        // Update Tabs
         document.querySelectorAll('button[id^="tab-"]').forEach((btn) => {
           btn.className =
-            "tab-inactive px-6 py-3 text-sm focus:outline-none transition-colors whitespace-nowrap";
+            "tab-inactive px-8 py-4 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-t-2xl text-[var(--secondary-text)] border-b-2 border-transparent hover:text-[var(--primary-text)]";
         });
         document.getElementById(`tab-${category}`).className =
-          "tab-active px-6 py-3 text-sm focus:outline-none transition-colors whitespace-nowrap";
+          "tab-active px-8 py-4 text-sm font-bold uppercase tracking-wider focus:outline-none transition-all whitespace-nowrap rounded-t-2xl text-purple border-b-2 border-purple bg-[var(--bg-card)]";
 
         // Update Insight
         const catData = syncData[category];
@@ -860,14 +1064,21 @@
 
         catData.brands.forEach((brand, index) => {
           const btn = document.createElement("button");
-          btn.className = `text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors w-full ${index === 0 ? "bg-[#2D2A26] text-white shadow-md" : "bg-white text-[#5D5A56] hover:bg-[#F6F4F0] border border-transparent"}`;
+          btn.className = `text-left px-5 py-4 rounded-2xl text-sm font-bold transition-all w-full border ${
+            index === 0
+              ? "bg-purple text-white border-purple transform scale-[1.02]"
+              : "bg-[var(--bg-color)] text-[var(--secondary-text)] hover:bg-[var(--highlight-bg)] hover:text-[var(--primary-text)] border-[var(--border-color)]"
+          }`;
           btn.innerHTML = `
                     <div class="flex justify-between items-center">
-                        <span>${brand.name}</span>
-                        ${index === 0 ? '<span class="text-[#C07F5E]">●</span>' : ""}
+                        <span class="tracking-wide uppercase">${brand.name}</span>
+                        ${index === 0 ? '<span class="text-[var(--primary-text)] text-lg">●</span>' : ""}
                     </div>
                 `;
-          btn.onclick = () => selectBrand(category, index, btn);
+          btn.onclick = () => {
+              currentBrandIndex = index; // Update State
+              selectBrand(category, index, btn);
+          };
           brandList.appendChild(btn);
         });
 
@@ -885,20 +1096,21 @@
 
       function selectBrand(category, index, btnElement) {
         // Visual update for list
+        // Visual update for list
         const list = document.getElementById("brand-list");
         Array.from(list.children).forEach((b) => {
           b.className =
-            "text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors w-full bg-white text-[#5D5A56] hover:bg-[#F6F4F0] border border-transparent";
+            "text-left px-5 py-4 rounded-2xl text-sm font-bold transition-all w-full border bg-[var(--bg-color)] text-[var(--secondary-text)] hover:bg-[var(--highlight-bg)] hover:text-[var(--primary-text)] border-[var(--border-color)]";
           b.innerHTML = b.innerHTML.replace(
-            '<span class="text-[#C07F5E]">●</span>',
+            '<span class="text-[var(--primary-text)] text-lg">●</span>',
             "",
           );
         });
         btnElement.className =
-          "text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors w-full bg-[#2D2A26] text-white shadow-md";
+          "text-left px-5 py-4 rounded-2xl text-sm font-bold transition-all w-full border bg-purple text-white border-purple transform scale-[1.02]";
         btnElement.innerHTML = btnElement.innerHTML.replace(
           "</div>",
-          '<span class="text-[#C07F5E]">●</span></div>',
+          '<span class="text-white text-lg">●</span></div>',
         );
 
         const brandData = syncData[category].brands[index];
@@ -932,26 +1144,26 @@
 
         brandData.songs.forEach((song, i) => {
           const links = generateSearchLinks(song.title, song.artist);
-          const row = document.createElement("div");
+           const row = document.createElement("div");
           row.className =
-            "song-item flex items-start gap-4 p-4 rounded-lg border border-[#F0ECE6] bg-white";
+            "song-item flex items-start gap-5 p-5 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-color)] hover:border-purple transition-all group";
 
           row.innerHTML = `
-                    <div class="text-[#C07F5E] font-bold text-sm pt-1">${i + 1}</div>
-                    <div class="flex-grow flex flex-col gap-2">
+                    <div class="text-[var(--secondary-text)] font-bold text-sm pt-1 group-hover:text-purple transition-colors">0${i + 1}</div>
+                    <div class="flex-grow flex flex-col gap-3">
                         <!-- Top Row: Song Info -->
                         <div class="flex flex-col">
-                            <div class="text-base font-bold text-[#2D2A26] leading-tight">${song.title}</div>
-                            <div class="text-sm text-[#5D5A56]">${song.artist}</div>
+                            <div class="text-lg font-bold text-[var(--primary-text)] leading-tight">${song.title}</div>
+                            <div class="text-sm text-[var(--secondary-text)] mt-1">${song.artist}</div>
                         </div>
 
                         <!-- Vibe Badge (Context) -->
-                        <div class="text-xs text-[#5D5A56] bg-[#F6F4F0] px-2 py-1 rounded inline-block self-start">
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--primary-text)] bg-[var(--border-color)] px-2 py-1 rounded-lg inline-block self-start border border-[var(--border-color)] group-hover:border-purple transition-colors">
                             ${song.vibe}
                         </div>
                         
                         <!-- Bottom Row: Buttons (New Line) -->
-                        <div class="flex items-center gap-3 mt-2 pt-2 border-t border-dashed border-[#F0ECE6]">
+                        <div class="flex items-center gap-3 mt-2 pt-3 border-t border-[var(--border-color)] group-hover:border-[rgba(116,86,241,0.3)] transition-colors">
                             <a href="${links.spotify}" target="_blank" rel="noopener noreferrer" 
                                class="btn-platform" title="Open in Spotify">
                                ${spotifyIcon}
@@ -971,6 +1183,13 @@
       }
 
       function updateCharts(brandData) {
+        const isLight = document.body.classList.contains("light-mode");
+        
+        // Theme Colors
+        const gridColor = isLight ? "#E5E7EB" : "#2d3b4e";
+        const textColor = isLight ? "#4B5563" : "#9ca3af";
+        const angleLineColor = isLight ? "#d1d5db" : "#E0DCD5";
+        
         // Radar Chart (Sonic Fingerprint)
         const ctxRadar = document.getElementById("radarChart").getContext("2d");
 
@@ -993,12 +1212,12 @@
                 label: brandData.name,
                 data: brandData.fingerprint,
                 fill: true,
-                backgroundColor: "rgba(192, 127, 94, 0.2)", // Accent color low opacity
-                borderColor: "#C07F5E",
-                pointBackgroundColor: "#C07F5E",
+                backgroundColor: "rgba(116, 86, 241, 0.2)", // Purple, low opacity
+                borderColor: "#7456F1", // Purple
+                pointBackgroundColor: "#7456F1",
                 pointBorderColor: "#fff",
                 pointHoverBackgroundColor: "#fff",
-                pointHoverBorderColor: "#C07F5E",
+                pointHoverBorderColor: "#7456F1",
               },
             ],
           },
@@ -1007,11 +1226,11 @@
             responsive: true,
             scales: {
               r: {
-                angleLines: { color: "#E0DCD5" },
-                grid: { color: "#E0DCD5" },
+                angleLines: { color: angleLineColor },
+                grid: { color: gridColor },
                 pointLabels: {
-                  font: { size: 11, family: "Inter" },
-                  color: "#5D5A56",
+                  font: { size: 11, family: "Figtree" },
+                  color: textColor,
                 },
                 suggestedMin: 0,
                 suggestedMax: 100,
@@ -1038,8 +1257,8 @@
             datasets: [
               {
                 label: "Relevance",
-                data: [90, 70, 50], // Dummy data for relative importance of genres listed
-                backgroundColor: ["#2D2A26", "#5D5A56", "#8A8780"],
+                data: [90, 70, 50], // Dummy data
+                backgroundColor: ["#7456F1", "#5e45c4", "#1a2c42"],
                 borderRadius: 4,
               },
             ],
@@ -1053,8 +1272,8 @@
               y: {
                 grid: { display: false },
                 ticks: {
-                  font: { family: "Inter" },
-                  color: "#2D2A26",
+                  font: { family: "Figtree" },
+                  color: textColor,
                 },
               },
             },
